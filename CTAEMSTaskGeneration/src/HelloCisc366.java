@@ -8,6 +8,7 @@ public class HelloCisc366 {
 		// TODO Auto-generated method stub
 		System.out.println("Hello, Cisc366-Matt");
 		System.out.println("Hey, Cisc366-Will!");
+		System.out.println("hey, Cisc366-Bola");
 	}
 
 }
