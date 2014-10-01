@@ -17,6 +17,9 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import project.Generate;
+import project.GenerateLoad;
+
 	/**
 	 *
 	 * @author abimbolaakinmeji
@@ -60,12 +63,18 @@ import org.jfree.data.xy.XYSeriesCollection;
 	    }
 	    
 	    private HistogramDataset createDataset() {
-	       double[] test = {1,2,3,4,5,6,7,8,9,10};
-	       double[] test2 = {6,7,8,9,11,13,14,15,16,17}; 
-	       int bin = 30;
+	    	GenerateLoad gl = new GenerateLoad();
+	    	
+	    	
+	    	for (int i = 1; i <= 20; i++)
+	    		//gl.generateNextTimeStep((int)(300*Generate.Normal(10, 3, i)));
+	    		gl.generateNextTimeStep((int)(300*Generate.Laplace(10, 3, i)));
+	    		//gl.generateNextTimeStep((int)(300*Generate.Exponential(1, 20, i)));
+	    	gl.generateNextTimeStep(0);
+	    	
+	       int bin = (int) gl.time;
 	       HistogramDataset dataset = new HistogramDataset();
-	       dataset.addSeries("Pos", test, bin,0,1);
-	       dataset.addSeries("Neg",test2,bin,0,1);
+	       dataset.addSeries("Pos", gl.histogram(), 20,0,20);
 	       return dataset;
 	        
 	    }

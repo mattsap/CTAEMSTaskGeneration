@@ -1,25 +1,20 @@
+import graphs.MethodStartEndTime;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.swing.BoxLayout;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-
 
 public class GUI extends JApplet {
 	//VisualsGUI visual = new VisualsGUI(this);
-	private static JFXPanel fxContainer;
+	private static JPanel fxContainer;
 	
 	public GUI() {
 		
@@ -56,20 +51,21 @@ public class GUI extends JApplet {
 	
 	@Override
     public void init() {
-        fxContainer = new JFXPanel();
-        TestPanel ts = new TestPanel();
+        fxContainer = new JPanel();
+        //JPanel ts = new MethodStartEndTime();
+        JPanel ts = new TestPanel();
         fxContainer.setPreferredSize(new Dimension(ts.getWidth(), ts.getHeight()));
 		this.getContentPane().setBackground(Color.gray);
 
-        add(ts, BorderLayout.CENTER);
+        add(ts, BorderLayout.AFTER_LAST_LINE);
         // create JavaFX scene
-        Platform.runLater(new Runnable() {
+      /*  Platform.runLater(new Runnable() {
             
             @Override
             public void run() {
                 createScene();
             }
-        });
+        });*/
     }
 
 
