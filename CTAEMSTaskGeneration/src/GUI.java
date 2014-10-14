@@ -11,6 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import project.GenerateLoad;
+
 
 public class GUI extends JApplet {
 	//VisualsGUI visual = new VisualsGUI(this);

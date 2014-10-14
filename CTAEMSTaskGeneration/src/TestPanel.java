@@ -1,6 +1,7 @@
 
 	
 	import java.awt.Color;
+import java.util.ArrayList;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -19,6 +20,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import project.Generate;
 import project.GenerateLoad;
+import project.Method;
 
 	/**
 	 *
@@ -65,16 +67,41 @@ import project.GenerateLoad;
 	    private HistogramDataset createDataset() {
 	    	GenerateLoad gl = new GenerateLoad();
 	    	
+	    	int[] loadDist = new int[100];
+	    	for (int i = 0; i < loadDist.length; i++)
+	    		loadDist[i] = (int)(300000*Generate.Normal(50, 30, i));
+	    		//loadDist[i] = (int)(13000*Generate.Poisson(14, i));
 	    	
+
+	    	ArrayList<Double> stuff = new ArrayList<Double>();
+			
+			for(int i = 0; i < loadDist.length; i++) {
+				for (int j = 0; j < loadDist[i]; j++)
+					stuff.add((double) i);
+			}
+			
+			double[] ret = new double[stuff.size()];
+			for (int i = 0; i < ret.length; i++)
+				ret[i] = stuff.get(i);
+	    	
+	    	gl.generate(loadDist);
+	    	
+	    	
+	    	/*
+	    	int value = 0;
 	    	for (int i = 1; i <= 20; i++)
-	    		//gl.generateNextTimeStep((int)(300*Generate.Normal(10, 3, i)));
-	    		gl.generateNextTimeStep((int)(300*Generate.Laplace(10, 3, i)));
+	    		gl.generateNextTimeStep((int)(300*Generate.Normal(10, 3, i)));
+	    		//gl.generateNextTimeStep((int)(300*Generate.Laplace(10, 3, i)));
 	    		//gl.generateNextTimeStep((int)(300*Generate.Exponential(1, 20, i)));
-	    	gl.generateNextTimeStep(0);
+	    		//gl.generateNextTimeStep((int)(700 * Generate.Poisson(4, i)));
+	    		//gl.generateNextTimeStep((value += (int)(700 * Generate.Poisson(10, i))));
+	    	gl.generateNextTimeStep(0);*/
 	    	
-	       int bin = (int) gl.time;
 	       HistogramDataset dataset = new HistogramDataset();
-	       dataset.addSeries("Pos", gl.histogram(), 20,0,20);
+	       dataset.addSeries("Load", ret,loadDist.length+1,0,loadDist.length);
+	       dataset.addSeries("Actual Load", gl.histogram(),loadDist.length+1,0,loadDist.length);
+	       dataset.addSeries("Duration", gl.durationhistogram(), 10,1,10);
+	       //dataset.addSeries("Time", gl.timeHist, 10,1,10);
 	       return dataset;
 	        
 	    }
