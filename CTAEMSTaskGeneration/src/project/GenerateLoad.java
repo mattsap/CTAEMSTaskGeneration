@@ -73,7 +73,7 @@ public class GenerateLoad {
 		ArrayList<Integer> timeDist = new ArrayList<Integer>();
 		int sum = 0;
 		while (sum < timeUnits) {
-			int rn = r.nextInt(10) + 1;
+			int rn = r.nextInt(1) + 1;
 			timeDist.add(rn);
 			sum += rn;
 		}
@@ -123,7 +123,7 @@ public class GenerateLoad {
 				final Method method = new Method();
 				method.arivalTime = start;
 				method.releaseTime = start;
-				method.duration = duration;
+				method.duration = (int)Math.round(duration * (1.0f-r.nextFloat()));
 				method.deadline = start + duration;
 				start += duration;
 				
@@ -180,15 +180,34 @@ public class GenerateLoad {
 		return ret;
 	}
 	
-	public double[] durationhistogram() {
+	public double[] opentimehistogram() {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		for(Method m : generated) {
-			stuff.add((double)m.getDuration());
+			stuff.add((double)(m.getDeadline() - m.getArivalTime()));
 		}
 		
 		double[] ret = new double[stuff.size()];
 		for (int i = 0; i < ret.length; i++)
 			ret[i] = stuff.get(i);
+		return ret;
+	}
+	
+	public double[] timePressurehist() {
+		ArrayList<Double> stuff = new ArrayList<Double>();
+		for(Method m : generated) {
+			double opentime = m.getDeadline() - m.getArivalTime();
+			double unusedtime = opentime - m.getDuration();
+			double timepressure = m.getDuration() / opentime;
+			stuff.add(timepressure * 10);
+		}
+		
+		double[] ret = new double[stuff.size()];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = stuff.get(i);
+		System.out.println(ret[0]);
+		System.out.println(ret[1]);
+		System.out.println(ret[2]);
+		System.out.println(ret[3]);
 		return ret;
 	}
 }

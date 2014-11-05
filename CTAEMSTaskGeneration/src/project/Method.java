@@ -1,5 +1,8 @@
 package project;
 
+import sexpr.Parser;
+import sexpr.Sexpr;
+
 public class Method extends Task{
 
 	public long arivalTime, releaseTime, duration, deadline, reward;
@@ -35,4 +38,24 @@ public class Method extends Task{
 		return reward;
 	}
 
+	public Sexpr toSexpr(String name) {
+		
+		String sexpr =
+				"(spec_method (label " + name + ") " + 
+					"(outcomes " + 
+						"(" + name + "_o0 " + 
+							"(density 1.0) " + 
+							"(duration-distribution " + getDuration() + " 1.0)" + 
+						")" + 
+					")" + 
+				")";
+	
+		try {
+			return Parser.parseExpr(sexpr);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

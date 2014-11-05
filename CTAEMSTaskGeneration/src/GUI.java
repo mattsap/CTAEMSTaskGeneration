@@ -1,17 +1,18 @@
-import graphs.MethodStartEndTime;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import project.Distribute;
 import project.GenerateLoad;
+import sexpr.Parser;
+import sexpr.Sexpr;
 
 
 public class GUI extends JApplet {
@@ -24,6 +25,29 @@ public class GUI extends JApplet {
 
 	
 	public static void main(String[] args) {
+		
+		Parser p = new Parser();
+		List<Sexpr> res = null;
+		try {
+			res = p.parse("(spec_task (subtasks Method%70) (deadline 100)) (spec_task (subtasks Method%30) (world 2))");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		GenerateLoad gl = new GenerateLoad();
+    	
+    	int[] loadDist = new int[5];
+    	for (int i = 0; i < loadDist.length; i++)
+    		loadDist[i] = 2;
+    	
+    	gl.generate(loadDist);
+    	Distribute.ToSexprs(res, gl);
+    	
+    	for (Sexpr exp : res) {
+    		System.out.println(exp.toString());
+    	}
+		if (res != null)
+			return;
 		SwingUtilities.invokeLater(new Runnable(){
 
 			@Override
