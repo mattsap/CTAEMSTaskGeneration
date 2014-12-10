@@ -23,13 +23,21 @@ public class GUI extends JApplet {
 		
 	}
 
+	/**
+	 * Write Up:
+	 * 
+	 * 
+	 * 
+	 * @param args
+	 */
 	
 	public static void main(String[] args) {
 		
 		Parser p = new Parser();
 		List<Sexpr> res = null;
 		try {
-			res = p.parse("(spec_task (subtasks Method%70) (deadline 100)) (spec_task (subtasks Method%30) (world 2))");
+			//res = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
+			res = p.parse("(spec_task (label root) (subtasks tasksof2all%40 tasksof3all%60)) (spec_task (label tasksof2all) (subtasks tasksof2...)) (spec_task (label tasksof3all) (subtasks tasksof3...)) (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -46,8 +54,8 @@ public class GUI extends JApplet {
     	for (Sexpr exp : res) {
     		System.out.println(exp.toString());
     	}
-		if (res != null)
-			return;
+		/*if (res != null)
+			return;*/
 		SwingUtilities.invokeLater(new Runnable(){
 
 			@Override

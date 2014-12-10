@@ -20,10 +20,11 @@ public class GenerateLoad {
 				generated.add(aliveMethods.remove(i));
 			}
 		}
-		
+
+		int generatedCount = 0;
 		while (load > aliveMethods.size()) {
 			long duration = random.nextInt(5) + 1;
-			final Method method = new Method();
+			final Method method = new Method(++generatedCount);
 			method.arivalTime = this.time;
 			method.releaseTime = this.time;
 			method.duration = duration;
@@ -109,6 +110,7 @@ public class GenerateLoad {
 			}
 		}
 		
+		int generatedCount = 0;
 		for (TimeSlot ts : times) {
 			Collections.shuffle(ts.durations);
 			int extra = ts.end - ts.start - ts.duration;
@@ -120,10 +122,10 @@ public class GenerateLoad {
 				extra -= partExtra;
 			}
 			for (Integer duration : ts.durations) {
-				final Method method = new Method();
+				final Method method = new Method(++generatedCount);
 				method.arivalTime = start;
 				method.releaseTime = start;
-				method.duration = (int)Math.round(duration * (1.0f-r.nextFloat()));
+				method.duration = (int)Math.ceil(duration * (1.0f-r.nextFloat()));
 				method.deadline = start + duration;
 				start += duration;
 				

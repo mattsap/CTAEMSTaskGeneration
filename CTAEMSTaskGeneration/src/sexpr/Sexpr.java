@@ -3,9 +3,24 @@ package sexpr;
 import java.util.ArrayList;
 import java.util.List;
 
+import project.Method;
+
 public class Sexpr {
 	public String id;
 	public List<Sexpr> args = new ArrayList<Sexpr>(); 
+	public int cloneCount = 0;
+
+	public Sexpr clone(List<Sexpr> exprs) {
+		Sexpr ret = new Sexpr();
+		ret.id = this.id;
+		for (Sexpr exp : args) {
+			ret.args.add(exp.clone(exprs));
+			if (this.id.equals("label")) {
+				ret.args.get(ret.args.size()-1).id += "_CLONE_" + ++cloneCount;
+			}
+		}
+		return ret;
+	}
 	
 	@Override
 	public String toString() {
@@ -26,4 +41,90 @@ public class Sexpr {
 			return ret;
 		}
 	}
+	
+	public boolean NeedsMethods() {
+		for (Sexpr exp : this.getArgsOfArgWithName("subtasks")) {
+			if (exp.id.contains("%") || exp.id.contains("#"))
+				return true;
+		}
+		return false;
+	}
+	
+	public int PercentNeeded() {
+		int percent = 0;
+		for (Sexpr exp : this.getArgsOfArgWithName("subtasks")) {
+			if (exp.id.contains("%")) {
+				percent += Integer.parseInt(exp.id.substring(exp.id.indexOf("%")+1));
+			}
+		}
+		return percent;
+	}
+	
+	public int CountNeeded() {
+		int count = 0;
+		for (Sexpr exp : this.getArgsOfArgWithName("subtasks")) {
+			if (exp.id.contains("#")) {
+				count += Integer.parseInt(exp.id.substring(exp.id.indexOf("#")+1));
+			}
+		}
+		return count;
+	}
+	
+	public void AddGeneratedMethods(List<Sexpr> exprs, List<Method> methods) {
+		Sexpr percentTask = null;
+		for (Sexpr sexp : this.args) {
+			if (sexp.id.equals("subtasks")) {
+				percentTask = sexp;
+				List<Sexpr> toRemove = new ArrayList<Sexpr>();
+				for (Sexpr mexp : sexp.args) {
+					if (mexp.id.startsWith("Method%") || mexp.id.startsWith("Method#")) {
+						toRemove.add(mexp);
+					}
+				}
+				sexp.args.removeAll(toRemove);
+				break;
+			}
+		}
+		
+		int totake = methods.size();
+		long earliest_start_time = this.isArgWithName("earliest_start_time") ? 
+					Long.parseLong(this.getArgsOfArgWithName("earliest_start_time").get(0).id) :
+					Long.MAX_VALUE ;
+		long task_deadline = this.isArgWithName("deadline") ? 
+					Long.parseLong(this.getArgsOfArgWithName("deadline").get(0).id) :
+					Long.MAX_VALUE;
+		for (; totake > 0; totake--) {
+			Method m = methods.get(totake-1);
+			Sexpr mexp = new Sexpr();
+			mexp.id = "Method_GEN_" + m.id;
+			percentTask.args.add(mexp);
+			exprs.add(m.toSexpr(mexp.id));
+			
+			earliest_start_time = Math.min(earliest_start_time, m.releaseTime);
+			task_deadline = Math.max(task_deadline, m.deadline);
+		}
+
+		//  FIX: I don't consider subtasks that have been generated
+		SexprUtils.SetField(this, "deadline", "FIXME: " + task_deadline);
+		SexprUtils.SetField(this, "earliest_start_time", "FIXME: " + earliest_start_time);
+	}
+	
+	public List<Sexpr> getArgsOfArgWithName(String name) {
+		for (Sexpr arg : args) {
+			if (arg.id.equals(name)) {
+				return arg.args;
+			}
+		}
+		assert false;
+		return null;
+	}
+	public boolean isArgWithName(String name) {
+		for (Sexpr arg : args) {
+			if (arg.id.equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

@@ -1,6 +1,7 @@
 package project;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import sexpr.Sexpr;
@@ -8,7 +9,77 @@ import sexpr.SexprUtils;
 
 public class Distribute {
 
+	
 	public static void ToSexprs(List<Sexpr> exprs, GenerateLoad g) {
+		HashMap<String, SexprGraph> lookup = new HashMap<String, SexprGraph>();
+		
+		//  Setup lookup table
+		for (Sexpr exp : exprs) {
+			if (!exp.id.equals("spec_task"))
+				continue;
+		
+			lookup.put(exp.getArgsOfArgWithName("label").get(0).id, new SexprGraph(exp));
+		}
+		
+		//  Build graph
+		for (SexprGraph node : lookup.values()) {
+			Sexpr toRemove = null;
+			for (Sexpr task : node.expr.getArgsOfArgWithName("subtasks")) {
+				String taskid = task.id;
+				int percent = 0;
+				if (taskid.contains("%")) {
+					percent = Integer.parseInt(taskid.substring(taskid.indexOf("%")+1));
+					taskid = taskid.substring(0, taskid.indexOf("%"));
+				}
+				if (taskid.endsWith("...")) {
+					taskid = taskid.substring(0, taskid.length() - 3);
+					SexprGraph lookedup = lookup.get(taskid);
+					lookedup.willNeedACopy = true;
+					task.id = taskid;
+					node.dotdotdot = lookedup;
+					toRemove = task;
+				}
+				else if (lookup.containsKey(taskid)) {
+					SexprGraph lookedup = lookup.get(taskid);
+					assert !lookedup.willNeedACopy;
+					lookedup.willNeedACopy = true;
+					node.edges.add(lookedup);
+					node.percentMethodsPerEdge.add(percent);
+					task.id = taskid;
+				}
+			}
+
+			if (toRemove != null) {
+				for (Sexpr sei : node.expr.args) {
+					if (sei.id.equals("subtasks")) {
+						sei.args.remove(toRemove);
+					}
+				}
+			}
+		}
+		
+		//  Find root
+		SexprGraph rootnode = null;
+		for (SexprGraph node : lookup.values()) {
+			boolean found = true;
+			for (SexprGraph test : lookup.values()) {
+				if (test.edges.contains(node) || test.dotdotdot == node) {
+					found = false;
+					break;
+				}
+			}
+			if (found) {
+				assert rootnode == null;
+				rootnode = node;
+			}
+		}
+		
+		assert rootnode != null;
+		
+		rootnode.Distribute(exprs, g.generated);
+	}
+	
+	public static void ToSexprs_OLD(List<Sexpr> exprs, GenerateLoad g) {
 		
 		List<Sexpr> percentages = SexprUtils.FindTasksRequirePercentOfMethods(exprs);
 		List<Method> methods = new ArrayList<Method>(g.generated);

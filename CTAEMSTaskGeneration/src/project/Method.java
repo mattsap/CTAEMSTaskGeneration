@@ -6,8 +6,10 @@ import sexpr.Sexpr;
 public class Method extends Task{
 
 	public long arivalTime, releaseTime, duration, deadline, reward;
+	public int id;
 	
-	public Method() {
+	public Method(int id) {
+		this.id = id;
 	}
 	
 	@Override
