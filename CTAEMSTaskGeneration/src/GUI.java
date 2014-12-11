@@ -33,27 +33,50 @@ public class GUI extends JApplet {
 	
 	public static void main(String[] args) {
 		
+		/* On File Open
 		Parser p = new Parser();
-		List<Sexpr> res = null;
+		List<Sexpr> structure = null;
 		try {
-			//res = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
+			//structure = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
+			
+			// figure out opening file
+			// replace string with contents of opened file
 			res = p.parse("(spec_task (label root) (subtasks tasksof2all%40 tasksof3all%60)) (spec_task (label tasksof2all) (subtasks tasksof2...)) (spec_task (label tasksof3all) (subtasks tasksof3...)) (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		End On File Open */
+		
+		/* On Generate
 		GenerateLoad gl = new GenerateLoad();
     	
-    	int[] loadDist = new int[5];
-    	for (int i = 0; i < loadDist.length; i++)
-    		loadDist[i] = 2;
-    	
+		// get all gl.generate arguements from the graphs
+		 
+		// IGNORE!!
+    	//int[] loadDist = new int[5];
+    	//for (int i = 0; i < loadDist.length; i++)
+    	//	loadDist[i] = 2;
+    	//
+		
+    	//  call to generate
     	gl.generate(loadDist);
-    	Distribute.ToSexprs(res, gl);
     	
-    	for (Sexpr exp : res) {
-    		System.out.println(exp.toString());
+    	End On Generate */
+    	
+    	
+		/* On Save
+    	// inserting generated methods into loaded file
+    	Distribute.ToSexprs(structure, gl);
+    	
+    	// get generated structure as a string
+    	String finalStructure = "";
+    	for (Sexpr exp : structure) {
+    		finalStructure += (exp.toString());
     	}
+    	End On Save */
+    	
+    	//System.out.println(finalStructure);
 		/*if (res != null)
 			return;*/
 		SwingUtilities.invokeLater(new Runnable(){

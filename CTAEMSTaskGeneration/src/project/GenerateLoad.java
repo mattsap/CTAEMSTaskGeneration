@@ -44,8 +44,17 @@ public class GenerateLoad {
 	
 	public double[] timeHist;
 	
-	public void generate(int[] loadDist) {
+	/**
+	 * 
+	 * @param loadGraph 
+	 * @param rewardGraph
+	 * @param opentimeGraph 
+	 * @param timepressureGraph array of length 100; represents count of how likely array index percentage
+	 */
+	public void generate(int[] loadGraph, int[] rewardGraph, int[] opentimeGraph, int[] timepressureGraph) {
 
+	}
+	public void generate(int[] loadDist) {
 		int timeUnits = 0;
 		for (int i = 0; i < loadDist.length; i++)
 			timeUnits += loadDist[i];
@@ -167,13 +176,26 @@ public class GenerateLoad {
 		}
 	}
 	
-	public double[] histogram() {
+	public double[] loadhistogram() {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
 			for (long i = m.arivalTime; i < m.deadline; i++) {
 				stuff.add((double) i);
 			}
+		}
+		
+		double[] ret = new double[stuff.size()];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = stuff.get(i);
+		return ret;
+	}
+	
+	public double[] rewardhistogram() {
+		ArrayList<Double> stuff = new ArrayList<Double>();
+		
+		for(Method m : generated) {
+			stuff.add((double) m.reward);
 		}
 		
 		double[] ret = new double[stuff.size()];

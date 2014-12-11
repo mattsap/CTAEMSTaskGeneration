@@ -99,7 +99,7 @@ import project.Method;
 	    	
 	       HistogramDataset dataset = new HistogramDataset();
 	       dataset.addSeries("Load", ret,loadDist.length+1,0,loadDist.length);
-	       dataset.addSeries("Actual Load", gl.histogram(),loadDist.length+1,0,loadDist.length);
+	       dataset.addSeries("Actual Load", gl.loadhistogram(),loadDist.length+1,0,loadDist.length);
 	       //dataset.addSeries("Open Time", gl.opentimehistogram(), 10,1,10);
 	       //dataset.addSeries("Time Pressure", gl.timePressurehist(), 10,0,10);
 	       //dataset.addSeries("Time", gl.timeHist, 10,1,10);
