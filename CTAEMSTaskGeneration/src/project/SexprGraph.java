@@ -109,9 +109,9 @@ public class SexprGraph {
 		if (dotdotdot != null) {
 			int countNeeded = dotdotdot.CountNeeded();
 			assert countNeeded > 0;
-			for (; generatedMethodsUsed+countNeeded <= methods.size(); generatedMethodsUsed += countNeeded) {
+			for (; generatedMethodsUsed < methods.size(); generatedMethodsUsed += countNeeded) {
 				SexprGraph clone = dotdotdot.clone(exprs);
-				clone.Distribute(exprs, methods.subList(generatedMethodsUsed, generatedMethodsUsed+countNeeded));
+				clone.Distribute(exprs, methods.subList(generatedMethodsUsed, Math.min(generatedMethodsUsed+countNeeded, methods.size())));
 				SexprUtils.AppendField(expr, "subtasks", clone.expr.getArgsOfArgWithName("label").get(0).id);
 				this.edges.add(clone);
 				this.percentMethodsPerEdge.add(0);

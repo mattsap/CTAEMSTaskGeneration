@@ -33,7 +33,7 @@ public class GUI extends JApplet {
 	
 	public static void main(String[] args) {
 		
-		/* On File Open
+		// On File Open
 		Parser p = new Parser();
 		List<Sexpr> structure = null;
 		try {
@@ -41,40 +41,52 @@ public class GUI extends JApplet {
 			
 			// figure out opening file
 			// replace string with contents of opened file
-			res = p.parse("(spec_task (label root) (subtasks tasksof2all%40 tasksof3all%60)) (spec_task (label tasksof2all) (subtasks tasksof2...)) (spec_task (label tasksof3all) (subtasks tasksof3...)) (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
+			structure = p.parse("(spec_task (label root) (subtasks tasksof2all%40 tasksof3all%60)) (spec_task (label tasksof2all) (subtasks tasksof2...)) (spec_task (label tasksof3all) (subtasks tasksof3...)) (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		End On File Open */
+		//End On File Open */
 		
-		/* On Generate
+		// On Generate
 		GenerateLoad gl = new GenerateLoad();
     	
 		// get all gl.generate arguements from the graphs
 		 
 		// IGNORE!!
-    	//int[] loadDist = new int[5];
-    	//for (int i = 0; i < loadDist.length; i++)
-    	//	loadDist[i] = 2;
-    	//
+    	int[] loadDist = new int[5];
+    	for (int i = 0; i < loadDist.length; i++)
+    		loadDist[i] = 2;
+    	
+    	int[] rewardDist = new int[5];
+    	for (int i = 0; i < rewardDist.length; i++)
+    		rewardDist[i] = 2;
+    	
+    	int[] opentimeDist = new int[5];
+    	for (int i = 0; i < opentimeDist.length; i++)
+    		opentimeDist[i] = 2;
+    	
+    	int[] timepressureDist = new int[5];
+    	for (int i = 0; i < timepressureDist.length; i++)
+    		timepressureDist[i] = 2;
+    	
 		
     	//  call to generate
-    	gl.generate(loadDist);
+    	gl.generate(loadDist, rewardDist, opentimeDist, timepressureDist);
     	
-    	End On Generate */
+    	//End On Generate */
     	
     	
-		/* On Save
+		// On Save
     	// inserting generated methods into loaded file
-    	Distribute.ToSexprs(structure, gl);
+    	//Distribute.ToSexprs(structure, gl);
     	
     	// get generated structure as a string
     	String finalStructure = "";
     	for (Sexpr exp : structure) {
     		finalStructure += (exp.toString());
     	}
-    	End On Save */
+    	//End On Save */
     	
     	//System.out.println(finalStructure);
 		/*if (res != null)

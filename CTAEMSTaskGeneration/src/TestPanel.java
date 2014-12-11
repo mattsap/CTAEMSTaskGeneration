@@ -72,20 +72,26 @@ import project.Method;
 	    		loadDist[i] = (int)(300000*Generate.Normal(50, 30, i));
 	    		//loadDist[i] = (int)(13000*Generate.Poisson(14, i));
 	    	
+	    	//gl.generate(loadDist);
+	    	
+	    	int[] rewardDist = new int[5];
+	    	for (int i = 0; i < rewardDist.length; i++)
+	    		rewardDist[i] = 2;
+	    	
+	    	int[] opentimeDist = new int[15];
+	    	for (int i = 10; i < opentimeDist.length; i++)
+	    		opentimeDist[i] = 2;
+	    	
+	    	int[] timepressureDist = new int[100];
+	    	//for (int i = 0; i < 10; i++)
+	    		//timepressureDist[i] = 2;
+	    	timepressureDist[10] = 1;
+	    	timepressureDist[20] = 1;
+	    	
+			
+	    	gl.generate(loadDist, rewardDist, opentimeDist, timepressureDist);
 
-	    	ArrayList<Double> stuff = new ArrayList<Double>();
-			
-			for(int i = 0; i < loadDist.length; i++) {
-				for (int j = 0; j < loadDist[i]; j++)
-					stuff.add((double) i);
-			}
-			
-			double[] ret = new double[stuff.size()];
-			for (int i = 0; i < ret.length; i++)
-				ret[i] = stuff.get(i);
-	    	
-	    	gl.generate(loadDist);
-	    	
+	    
 	    	
 	    	/*
 	    	int value = 0;
@@ -97,12 +103,25 @@ import project.Method;
 	    		//gl.generateNextTimeStep((value += (int)(700 * Generate.Poisson(10, i))));
 	    	gl.generateNextTimeStep(0);*/
 	    	
+	    	double[] opentimeActual = new double[gl.generated.size()];
+	    	int sumOpenTime = 0;
+			for (int i = 0; i < opentimeDist.length; i++)
+				sumOpenTime += opentimeDist[i];
+			int countO = 0;
+			for (int i = 0; i < opentimeDist.length; i++)
+				for (int j = 0; j < opentimeDist[i] * opentimeActual.length / sumOpenTime; j++)
+					opentimeActual[countO++] = i;
+	    	
 	       HistogramDataset dataset = new HistogramDataset();
-	       dataset.addSeries("Load", ret,loadDist.length+1,0,loadDist.length);
-	       dataset.addSeries("Actual Load", gl.loadhistogram(),loadDist.length+1,0,loadDist.length);
-	       //dataset.addSeries("Open Time", gl.opentimehistogram(), 10,1,10);
-	       //dataset.addSeries("Time Pressure", gl.timePressurehist(), 10,0,10);
-	       //dataset.addSeries("Time", gl.timeHist, 10,1,10);
+	       //dataset.addSeries("Load", loadDist,loadDist.length+1,0,loadDist.length);
+	       //dataset.addSeries("Actual Load", gl.loadhistogram(),loadDist.length+1,0,loadDist.length);
+	       //dataset.addSeries("Open Time", gl.opentimehistogram(), opentimeDist.length+1,0,opentimeDist.length);
+	       //dataset.addSeries("Actual Open Time", opentimeActual,opentimeDist.length+1,0,opentimeDist.length);
+	       dataset.addSeries("Time Pressure", gl.timePressurehist(), timepressureDist.length+1,0,timepressureDist.length);
+	       dataset.addSeries("Actual Time Pressure", gl.actualTimePressureHist(),timepressureDist.length+1,0,timepressureDist.length);
+	       //dataset.addSeries("Reward", gl.rewardhistogram(), rewardDist.length+1,0,rewardDist.length);
+	       //dataset.addSeries("Actual Reward", gl.actualRewardHist(),rewardDist.length+1,0,rewardDist.length);
+	       
 	       return dataset;
 	        
 	    }
