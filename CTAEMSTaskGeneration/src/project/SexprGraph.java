@@ -9,7 +9,8 @@ import sexpr.SexprUtils;
 public class SexprGraph {
 	public Sexpr expr;
 	public boolean willNeedACopy = false;
-	public SexprGraph dotdotdot = null;
+	public List<SexprGraph> dotdotdot = new ArrayList<SexprGraph>();
+	public List<Integer> percentMethodsPerDotDotDot = new ArrayList<Integer>();
 	public List<SexprGraph> edges = new ArrayList<SexprGraph>();
 	public List<Integer> percentMethodsPerEdge = new ArrayList<Integer>();
 	public SexprGraph(Sexpr expr) {
@@ -21,7 +22,9 @@ public class SexprGraph {
 		exprs.add(cloned);
 		SexprGraph ret = new SexprGraph(cloned);
 		ret.percentMethodsPerEdge.addAll(this.percentMethodsPerEdge);
-		ret.dotdotdot = this.dotdotdot == null ? null : this.dotdotdot.clone(exprs);
+		for (SexprGraph exp : dotdotdot) {
+			ret.dotdotdot.add(exp.clone(exprs));
+		}
 		for (SexprGraph exp : edges) {
 			ret.edges.add(exp.clone(exprs));
 		}
@@ -106,12 +109,32 @@ public class SexprGraph {
 			}
 		}
 		
-		if (dotdotdot != null) {
-			int countNeeded = dotdotdot.CountNeeded();
+		int sumP = 0;
+		int countZeros = 0;
+		for (Integer pc : this.percentMethodsPerDotDotDot) {
+			sumP += pc;
+			if (pc == 0) countZeros++;
+		}
+		assert sumP <= 100 && sumP >= 0;
+		
+		List<Integer> realPercentDotDotDot = new ArrayList<Integer>();
+		for (Integer i : percentMethodsPerDotDotDot) {
+			if (i == 0)
+				realPercentDotDotDot.add((100-sumP) / countZeros);
+			else
+				realPercentDotDotDot.add(i);
+		}
+		
+		int methodsRemaining = methods.size() - generatedMethodsUsed;
+		for (int i = 0; i < dotdotdot.size(); i++) {
+			SexprGraph graph = dotdotdot.get(i);
+			Integer percent = realPercentDotDotDot.get(i);
+			int countNeeded = graph.CountNeeded();
 			assert countNeeded > 0;
-			for (; generatedMethodsUsed < methods.size(); generatedMethodsUsed += countNeeded) {
-				SexprGraph clone = dotdotdot.clone(exprs);
-				clone.Distribute(exprs, methods.subList(generatedMethodsUsed, Math.min(generatedMethodsUsed+countNeeded, methods.size())));
+			for (int j = ((percent*methodsRemaining)/100)/countNeeded; j > 0; j--) {
+				SexprGraph clone = graph.clone(exprs);
+				clone.Distribute(exprs, methods.subList(generatedMethodsUsed, generatedMethodsUsed+countNeeded));
+				generatedMethodsUsed+=countNeeded;
 				SexprUtils.AppendField(expr, "subtasks", clone.expr.getArgsOfArgWithName("label").get(0).id);
 				this.edges.add(clone);
 				this.percentMethodsPerEdge.add(0);
@@ -119,7 +142,7 @@ public class SexprGraph {
 		}
 		//  FIX ^^^
 		
-		assert generatedMethodsUsed == methods.size();
+		//assert generatedMethodsUsed == methods.size();
 	}
 	
 	public boolean NeedsMethods() {

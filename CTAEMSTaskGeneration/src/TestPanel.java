@@ -2,6 +2,7 @@
 	
 	import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -18,9 +19,12 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import project.Distribute;
 import project.Generate;
 import project.GenerateLoad;
 import project.Method;
+import sexpr.Parser;
+import sexpr.Sexpr;
 
 	/**
 	 *
@@ -69,7 +73,7 @@ import project.Method;
 	    	
 	    	int[] loadDist = new int[100];
 	    	for (int i = 0; i < loadDist.length; i++)
-	    		loadDist[i] = (int)(300000*Generate.Normal(50, 30, i));
+	    		loadDist[i] = (int)(30000*Generate.Normal(50, 30, i));
 	    		//loadDist[i] = (int)(13000*Generate.Poisson(14, i));
 	    	
 	    	//gl.generate(loadDist);
@@ -91,6 +95,28 @@ import project.Method;
 			
 	    	gl.generate(loadDist, rewardDist, opentimeDist, timepressureDist);
 
+	    	Parser p = new Parser();
+			List<Sexpr> structure = null;
+			try {
+				//structure = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
+				
+				// figure out opening file
+				// replace string with contents of opened file
+				structure = p.parse("(spec_task (label root) (subtasks Method%50 tasksof2...%40 tasksof3...%60))  (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			Distribute.ToSexprs(structure, gl);
+	    	
+	    	// get generated structure as a string
+	    	String finalStructure = "";
+	    	for (Sexpr exp : structure) {
+	    		finalStructure += (exp.toString());
+	    	}
+	    	//End On Save */
+	    	
+	    	System.out.println(finalStructure);
 	    
 	    	
 	    	/*

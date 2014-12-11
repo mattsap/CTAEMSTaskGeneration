@@ -23,7 +23,7 @@ public class Distribute {
 		
 		//  Build graph
 		for (SexprGraph node : lookup.values()) {
-			Sexpr toRemove = null;
+			List<Sexpr> toRemove = new ArrayList<Sexpr>();
 			for (Sexpr task : node.expr.getArgsOfArgWithName("subtasks")) {
 				String taskid = task.id;
 				int percent = 0;
@@ -36,8 +36,9 @@ public class Distribute {
 					SexprGraph lookedup = lookup.get(taskid);
 					lookedup.willNeedACopy = true;
 					task.id = taskid;
-					node.dotdotdot = lookedup;
-					toRemove = task;
+					node.dotdotdot.add(lookedup);
+					node.percentMethodsPerDotDotDot.add(percent);
+					toRemove.add(task);
 				}
 				else if (lookup.containsKey(taskid)) {
 					SexprGraph lookedup = lookup.get(taskid);
@@ -52,7 +53,7 @@ public class Distribute {
 			if (toRemove != null) {
 				for (Sexpr sei : node.expr.args) {
 					if (sei.id.equals("subtasks")) {
-						sei.args.remove(toRemove);
+						sei.args.removeAll(toRemove);
 					}
 				}
 			}
@@ -63,7 +64,7 @@ public class Distribute {
 		for (SexprGraph node : lookup.values()) {
 			boolean found = true;
 			for (SexprGraph test : lookup.values()) {
-				if (test.edges.contains(node) || test.dotdotdot == node) {
+				if (test.edges.contains(node) || test.dotdotdot.contains(node)) {
 					found = false;
 					break;
 				}

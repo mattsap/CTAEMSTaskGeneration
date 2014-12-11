@@ -471,10 +471,7 @@ public class GenerateLoad {
 		double[] ret = new double[stuff.size()];
 		for (int i = 0; i < ret.length; i++)
 			ret[i] = stuff.get(i);
-		System.out.println(ret[0]);
-		System.out.println(ret[1]);
-		System.out.println(ret[2]);
-		System.out.println(ret[3]);
+		
 		return ret;
 	}
 }
