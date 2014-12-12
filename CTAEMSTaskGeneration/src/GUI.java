@@ -41,7 +41,7 @@ public class GUI extends JApplet {
 			
 			// figure out opening file
 			// replace string with contents of opened file
-			structure = p.parse("(spec_task (label root) (subtasks Method%50 tasksof2...%40 tasksof3...%60))  (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
+			structure = p.parse("(spec_task (label hello) (subtasks ) (deadline 100) (earliest_start_time -1))(spec_task (label root) (subtasks hello Method%50 tasksof2...%40 tasksof3...%60))  (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -54,7 +54,7 @@ public class GUI extends JApplet {
 		// get all gl.generate arguements from the graphs
 		 
 		// IGNORE!!
-    	int[] loadDist = new int[25];
+    	int[] loadDist = new int[15];
     	for (int i = 0; i < loadDist.length; i++)
     		loadDist[i] = 2;
     	
@@ -88,9 +88,9 @@ public class GUI extends JApplet {
     	}
     	//End On Save */
     	
-    	//System.out.println(finalStructure);
-		/*if (res != null)
-			return;*/
+    	System.out.println(finalStructure);
+		if (true)
+			return;
 		SwingUtilities.invokeLater(new Runnable(){
 
 			@Override

@@ -31,7 +31,7 @@ public class SexprGraph {
 		return ret;
 	}
 	
-	public void Distribute(List<Sexpr> exprs, List<Method> methods) {
+	public void Distribute(List<Sexpr> exprs, List<Method> methods)  {
 		
 		List<SexprGraph> edgesNeedingMethods = new ArrayList<SexprGraph>();
 		List<Integer> edgeMethodPercentages = new ArrayList<Integer>();
@@ -146,7 +146,7 @@ public class SexprGraph {
 	}
 	
 	public boolean NeedsMethods() {
-		if (dotdotdot != null)
+		if (dotdotdot.size() > 0)
 			return true;
 		
 		if (expr.NeedsMethods()) {

@@ -49,7 +49,11 @@ public class Method extends Task{
 							"(density 1.0) " + 
 							"(duration-distribution " + getDuration() + " 1.0)" + 
 						")" + 
-					")" + 
+					") " + 
+					"(reward " + reward + ")" + 
+					"(deadline " + deadline + ")" + 
+					"(arival_time " + arivalTime + ")" + 
+					"(release_time " + releaseTime + ")" + 
 				")";
 	
 		try {

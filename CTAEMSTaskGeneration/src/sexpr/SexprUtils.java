@@ -5,6 +5,26 @@ import java.util.List;
 
 public class SexprUtils {
 
+	/**
+	 * 
+	 * @param exprs
+	 * @param name
+	 * @return Sexpr for the task or method labeled with name
+	 */
+	public static Sexpr FindTaskWithName(List<Sexpr> exprs, String name) {
+		for (Sexpr exp : exprs) {
+			if (exp.id.equals("spec_task") || exp.id.equals("spec_method")) {
+				List<Sexpr> args = exp.getArgsOfArgWithName("label");
+				
+				assert args != null && args.size() == 1 : "Invalid " + exp.id + " in structure with name: must have a label attribute with one argument";
+				
+				if (args.get(0).id.equals(name))
+					return exp;
+			}
+		}
+		return null;
+	}
+	
 	public static List<Sexpr> FindTasksRequirePercentOfMethods(List<Sexpr> exprs) {
 		ArrayList<Sexpr> ret = new ArrayList<Sexpr>();
 		for (Sexpr exp : exprs) {
