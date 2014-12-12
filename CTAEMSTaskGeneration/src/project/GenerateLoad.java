@@ -11,6 +11,7 @@ public class GenerateLoad {
 	public ArrayList<Method> aliveMethods = new ArrayList<Method>();
 	public long time = 0;
 	
+	private double[] loadActual;
 	private double[] opentimeActual;
 	private double[] timepressureActual;
 	private double[] rewardActual;
@@ -47,6 +48,8 @@ public class GenerateLoad {
 	}
 	
 	public double[] timeHist;
+	public int timeLength;
+	public int maxReward;
 	
 	/**
 	 * 
@@ -59,11 +62,24 @@ public class GenerateLoad {
 		
 		assert timepressureGraph.length == 100;
 		
+		timeLength = loadGraph.length;
+		maxReward = rewardGraph.length;
+		
 		opentimeGraph[0] = 0;
 		
 		int[] cloneLoad = new int[loadGraph.length];
-		for (int i = 0; i < loadGraph.length; i++)
+		int count = 0;
+		for (int i = 0; i < loadGraph.length; i++) {
 			cloneLoad[i] = loadGraph[i];
+			count += loadGraph[i];
+		}
+		loadActual = new double[count];
+		count = 0;
+		for (int i = 0; i < loadGraph.length; i++) {
+			for (int j = 0; j < loadGraph[i]; j++) {
+				loadActual[count++] = i;
+			}
+		}
 		loadGraph = cloneLoad;
 		
 		//  Convert rewardGraph into an array of probabilities
@@ -410,7 +426,23 @@ public class GenerateLoad {
 				rewardActual[countO++] = i;
 	}
 	
+	public double[] actualLoadHist() {
+		return loadActual;
+	}
 	public double[] loadhistogram() {
+		ArrayList<Double> stuff = new ArrayList<Double>();
+		
+		for(Method m : generated) {
+			for (long i = m.arivalTime; i < m.deadline; i++) {
+				stuff.add((double) i);
+			}
+		}
+		
+		double[] ret = new double[stuff.size()];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = stuff.get(i);
+		return ret;
+	}public double[] structureloadhistogram() {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
@@ -439,6 +471,19 @@ public class GenerateLoad {
 		for (int i = 0; i < ret.length; i++)
 			ret[i] = stuff.get(i);
 		return ret;
+	}public double[] structurerewardhistogram() {
+		ArrayList<Double> stuff = new ArrayList<Double>();
+		
+		for(Method m : generated) {
+			if (!m.becameSexpr)
+				continue;
+			stuff.add((double) m.reward);
+		}
+		
+		double[] ret = new double[stuff.size()];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = stuff.get(i);
+		return ret;
 	}
 	
 	public double[] actualOpenTimeHist() {
@@ -454,6 +499,18 @@ public class GenerateLoad {
 		for (int i = 0; i < ret.length; i++)
 			ret[i] = stuff.get(i);
 		return ret;
+	}public double[] structureopentimehistogram() {
+		ArrayList<Double> stuff = new ArrayList<Double>();
+		for(Method m : generated) {
+			if (!m.becameSexpr)
+				continue;
+			stuff.add((double)(m.getDeadline() - m.getArivalTime()));
+		}
+		
+		double[] ret = new double[stuff.size()];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = stuff.get(i);
+		return ret;
 	}
 	
 	public double[] actualTimePressureHist() {
@@ -462,6 +519,8 @@ public class GenerateLoad {
 	public double[] timePressurehist() {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		for(Method m : generated) {
+			if (!m.becameSexpr)
+				continue;
 			double opentime = m.getDeadline() - m.getArivalTime();
 			double unusedtime = opentime - m.getDuration();
 			double timepressure = unusedtime / opentime;
@@ -473,5 +532,30 @@ public class GenerateLoad {
 			ret[i] = stuff.get(i);
 		
 		return ret;
+	}
+	public double[] structuretimePressurehist() {
+		ArrayList<Double> stuff = new ArrayList<Double>();
+		for(Method m : generated) {
+			if (!m.becameSexpr)
+				continue;
+			double opentime = m.getDeadline() - m.getArivalTime();
+			double unusedtime = opentime - m.getDuration();
+			double timepressure = unusedtime / opentime;
+			stuff.add(timepressure * 100);
+		}
+		
+		double[] ret = new double[stuff.size()];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = stuff.get(i);
+		
+		return ret;
+	}
+	
+	public int methodsUsed() {
+		int count = 0;
+		for(Method m : generated) {
+			count += m.becameSexpr ? 1: 0;
+		}
+		return count;
 	}
 }

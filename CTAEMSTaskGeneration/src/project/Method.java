@@ -7,6 +7,7 @@ public class Method extends Task{
 
 	public long arivalTime, releaseTime, duration, deadline, reward;
 	public int id;
+	public boolean becameSexpr = false;
 	
 	public Method(int id) {
 		this.id = id;
@@ -41,7 +42,7 @@ public class Method extends Task{
 	}
 
 	public Sexpr toSexpr(String name) {
-		
+		becameSexpr = true;
 		String sexpr =
 				"(spec_method (label " + name + ") " + 
 					"(outcomes " + 

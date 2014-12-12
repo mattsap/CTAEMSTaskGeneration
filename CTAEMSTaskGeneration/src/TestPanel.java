@@ -34,12 +34,21 @@ import sexpr.Sexpr;
 	@SuppressWarnings("serial")
 	public class TestPanel extends javax.swing.JPanel {
 	    ChartPanel chartPanel;
-
+	   
+	    double[] hist1;double[] hist2; String n1; String n2;
+	    int bins, min, max;
 	    /**
 	     * Creates new form NewJPanel
 	     */
-	    public TestPanel() {
+	    public TestPanel( String n1, double[] hist1, String n2,double[] hist2, int bins, int min, int max) {
 	        initComponents();
+	        this.hist1 = hist1;
+	        this.hist2 = hist2;
+	        this.n1 = n1;
+	        this.n2 = n2;
+	        this.bins = bins;
+	        this.min = min;
+	        this.max = max;
 	        createGraph();
 	    }
 	    
@@ -69,84 +78,20 @@ import sexpr.Sexpr;
 	    }
 	    
 	    private HistogramDataset createDataset() {
-	    	GenerateLoad gl = new GenerateLoad();
 	    	
-	    	int[] loadDist = new int[100];
-	    	for (int i = 0; i < loadDist.length; i++)
-	    		loadDist[i] = (int)(30000*Generate.Normal(50, 30, i));
-	    		//loadDist[i] = (int)(13000*Generate.Poisson(14, i));
-	    	
-	    	//gl.generate(loadDist);
-	    	
-	    	int[] rewardDist = new int[5];
-	    	for (int i = 0; i < rewardDist.length; i++)
-	    		rewardDist[i] = 2;
-	    	
-	    	int[] opentimeDist = new int[15];
-	    	for (int i = 10; i < opentimeDist.length; i++)
-	    		opentimeDist[i] = 2;
-	    	
-	    	int[] timepressureDist = new int[100];
-	    	//for (int i = 0; i < 10; i++)
-	    		//timepressureDist[i] = 2;
-	    	timepressureDist[10] = 1;
-	    	timepressureDist[20] = 1;
-	    	
-			
-	    	gl.generate(loadDist, rewardDist, opentimeDist, timepressureDist);
-
-	    	Parser p = new Parser();
-			List<Sexpr> structure = null;
-			try {
-				//structure = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
-				
-				// figure out opening file
-				// replace string with contents of opened file
-				structure = p.parse("(spec_task (label root) (subtasks Method%50 tasksof2...%40 tasksof3...%60))  (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			Distribute.ToSexprs(structure, gl);
-	    	
-	    	// get generated structure as a string
-	    	String finalStructure = "";
-	    	for (Sexpr exp : structure) {
-	    		finalStructure += (exp.toString());
-	    	}
-	    	//End On Save */
-	    	
-	    	System.out.println(finalStructure);
-	    
-	    	
-	    	/*
-	    	int value = 0;
-	    	for (int i = 1; i <= 20; i++)
-	    		gl.generateNextTimeStep((int)(300*Generate.Normal(10, 3, i)));
-	    		//gl.generateNextTimeStep((int)(300*Generate.Laplace(10, 3, i)));
-	    		//gl.generateNextTimeStep((int)(300*Generate.Exponential(1, 20, i)));
-	    		//gl.generateNextTimeStep((int)(700 * Generate.Poisson(4, i)));
-	    		//gl.generateNextTimeStep((value += (int)(700 * Generate.Poisson(10, i))));
-	    	gl.generateNextTimeStep(0);*/
-	    	
-	    	double[] opentimeActual = new double[gl.generated.size()];
-	    	int sumOpenTime = 0;
-			for (int i = 0; i < opentimeDist.length; i++)
-				sumOpenTime += opentimeDist[i];
-			int countO = 0;
-			for (int i = 0; i < opentimeDist.length; i++)
-				for (int j = 0; j < opentimeDist[i] * opentimeActual.length / sumOpenTime; j++)
-					opentimeActual[countO++] = i;
 	    	
 	       HistogramDataset dataset = new HistogramDataset();
-	       //dataset.addSeries("Load", loadDist,loadDist.length+1,0,loadDist.length);
-	       //dataset.addSeries("Actual Load", gl.loadhistogram(),loadDist.length+1,0,loadDist.length);
+	       dataset.addSeries(n1, hist1, bins, min, max);
+	       dataset.addSeries(n2, hist2, bins, min, max);
+	       //dataset.addSeries("Load", loadDistClone,loadDist.length+1,0,loadDist.length);
+	       //dataset.addSeries("Generated Load", gl.loadhistogram(),loadDist.length+1,0,loadDist.length);
+	       //dataset.addSeries("Structure Load", gl.structureloadhistogram(),loadDist.length+1,0,loadDist.length);
 	       //dataset.addSeries("Open Time", gl.opentimehistogram(), opentimeDist.length+1,0,opentimeDist.length);
-	       //dataset.addSeries("Actual Open Time", opentimeActual,opentimeDist.length+1,0,opentimeDist.length);
-	       dataset.addSeries("Time Pressure", gl.timePressurehist(), timepressureDist.length+1,0,timepressureDist.length);
-	       dataset.addSeries("Actual Time Pressure", gl.actualTimePressureHist(),timepressureDist.length+1,0,timepressureDist.length);
+	       //dataset.addSeries("Generated Open Time", opentimeActual,opentimeDist.length+1,0,opentimeDist.length);
+	       //dataset.addSeries("Time Pressure", gl.timePressurehist(), timepressureDist.length+1,0,timepressureDist.length);
+	       //dataset.addSeries("Generated Time Pressure", gl.actualTimePressureHist(),timepressureDist.length+1,0,timepressureDist.length);
 	       //dataset.addSeries("Reward", gl.rewardhistogram(), rewardDist.length+1,0,rewardDist.length);
-	       //dataset.addSeries("Actual Reward", gl.actualRewardHist(),rewardDist.length+1,0,rewardDist.length);
+	       //dataset.addSeries("Generated Reward", gl.actualRewardHist(),rewardDist.length+1,0,rewardDist.length);
 	       
 	       return dataset;
 	        
