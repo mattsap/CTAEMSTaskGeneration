@@ -101,6 +101,7 @@ import sexpr.Sexpr;
 		String FileText;
 		GenerateLoad g1;
 		boolean generated = false;
+		boolean opened = false;
 
 		
 		
@@ -562,8 +563,9 @@ import sexpr.Sexpr;
 	    	  	          try {
 							FileText = readFile(sf.getPath(), Charset.defaultCharset());
 							JOptionPane.showMessageDialog(null, sf.getName() + " Has been Opened");
+							opened = true;
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
+							opened = false;
 							e.printStackTrace();
 						}
 	    	  	        
@@ -575,6 +577,10 @@ import sexpr.Sexpr;
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						if(opened == false || generated == false) {
+							JOptionPane.showMessageDialog(null, "Please Make Sure you have Opened a file and Generated Distributions First");
+						}
+						else {
 						Parser p = new Parser();
 						List<Sexpr> structure = null;
 						try {
@@ -610,7 +616,7 @@ import sexpr.Sexpr;
 				    	  }
 				    	}
 				    	    
-	    	  	 
+						}
 					} 
 	    	  	 });
 	    	  	 Toggle.addActionListener(new ActionListener(){
