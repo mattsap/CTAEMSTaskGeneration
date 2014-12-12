@@ -100,6 +100,7 @@ import sexpr.Sexpr;
 		IntervalXYDataset dataset;
 		String FileText;
 		GenerateLoad g1;
+		boolean generated = false;
 
 		
 		
@@ -215,6 +216,10 @@ import sexpr.Sexpr;
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
+					if(currentSeries == null){
+						JOptionPane.showMessageDialog(null, "Please Select A Type Of Graph Before Trying To Plot A Distribution");
+					}
+					else {
 					sliderxv = ((JSlider) e.getSource()).getValue();
 			        labelx.setText("X-VALUE : " + String.valueOf(sliderx.getValue()));
 			        try{
@@ -224,7 +229,7 @@ import sexpr.Sexpr;
 			        	
 			        }
 					System.out.println(sliderxv);
-					
+					}
 					
 				}
 				
@@ -234,6 +239,10 @@ import sexpr.Sexpr;
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
+					if(currentSeries == null){
+						JOptionPane.showMessageDialog(null, "Please Select A Type Of Graph Before Trying To Plot A Distribution");
+					}
+					else {
 					slideryv = ((JSlider) e.getSource()).getValue();
 			        labely.setText("Y-VALUE : " + String.valueOf(slidery.getValue()));
 
@@ -250,8 +259,10 @@ import sexpr.Sexpr;
 					
 					currentSeries.addOrUpdate(sliderxv,slideryv);
 					System.out.println(slideryv);
+					}
 					
 				}
+					
 				
 			});
 
@@ -528,7 +539,14 @@ import sexpr.Sexpr;
 						int[] OpenDist = convertSeries(Open);
 						int[] TpDist = convertSeries(TPSeries);
 						int[] RewardDist = convertSeries(Reward);
+						try{
 						g1.generate(loadDist, RewardDist, OpenDist, TpDist);
+						generated = true;
+						}
+						catch(Exception exp){
+							JOptionPane.showMessageDialog(null, "Error during Generation, Please check The Console");
+							generated = false;
+						}
 					}
 	    	  		
 	    	  	});
@@ -543,6 +561,7 @@ import sexpr.Sexpr;
 	    	  	          
 	    	  	          try {
 							FileText = readFile(sf.getPath(), Charset.defaultCharset());
+							JOptionPane.showMessageDialog(null, sf.getName() + " Has been Opened");
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -594,6 +613,20 @@ import sexpr.Sexpr;
 	    	  	 
 					} 
 	    	  	 });
+	    	  	 Toggle.addActionListener(new ActionListener(){
+	    	  		
+					@Override
+					public void actionPerformed(ActionEvent e) {
+	    	  			/*
+						 if(generated == false) {
+								JOptionPane.showMessageDialog(null, "Please Generate a Distribution first");
+		    	  		 }
+						 else {
+							 test.addSeries(g1);
+						 }
+					*/}
+	    	  		
+	    	  	 } );
 	    	  	 
 	      	}
 	  
