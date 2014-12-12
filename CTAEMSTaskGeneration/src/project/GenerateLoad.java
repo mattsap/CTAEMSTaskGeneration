@@ -60,7 +60,7 @@ public class GenerateLoad {
 	 */
 	public void generate(int[] loadGraph, int[] rewardGraph, int[] opentimeGraph, int[] timepressureGraph) {
 		
-		assert timepressureGraph.length == 100;
+		//assert timepressureGraph.length == 100;
 		
 		timeLength = loadGraph.length;
 		maxReward = rewardGraph.length;

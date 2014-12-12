@@ -51,9 +51,6 @@ import sexpr.Sexpr;
 	public class TestPanel extends javax.swing.JPanel {
 	    ChartPanel chartPanel;
 
-	   
-	    double[] hist1;double[] hist2; String n1; String n2;
-	    int bins, min, max;
 
 	    GridBagLayout Layout = new GridBagLayout();
 	    GridBagConstraints c = new GridBagConstraints();
@@ -99,17 +96,6 @@ import sexpr.Sexpr;
 	    /**
 	     * Creates new form NewJPanel
 	     */
-	    public TestPanel(String n1, double[] hist1, String n2,double[] hist2, int bins, int min, int max) {
-	    	this.hist1 = hist1;
-	        this.hist2 = hist2;
-	        this.n1 = n1;
-	        this.n2 = n2;
-	        this.bins = bins;
-	        this.min = min;
-	        this.max = max;
-	        simpleGraph();
-	    }
-	    
 	    public TestPanel() {
 	    	initComponents();
 	    	createGraph();
@@ -196,14 +182,6 @@ import sexpr.Sexpr;
     			}
 	    	
 	    
-
-	public final void simpleGraph() {
-        dataset = createDataset_OLD();
-        chart = createChart(dataset);
-        chartPanel = new ChartPanel(chart);
-        chartPanel.setSize(400, 400);	        
-        this.add(chartPanel);
-	}
 	                  
 
 	  public final void createGraph() {
@@ -675,23 +653,6 @@ import sexpr.Sexpr;
 		  
 	  	
 	    
-	    private HistogramDataset createDataset_OLD() {
-	    	
-	    	
-	       HistogramDataset dataset = new HistogramDataset();
-	       dataset.addSeries(n1, hist1, bins, min, max);
-	       dataset.addSeries(n2, hist2, bins, min, max);
-	       //dataset.addSeries("Load", loadDistClone,loadDist.length+1,0,loadDist.length);
-	       //dataset.addSeries("Generated Load", gl.loadhistogram(),loadDist.length+1,0,loadDist.length);
-	       //dataset.addSeries("Structure Load", gl.structureloadhistogram(),loadDist.length+1,0,loadDist.length);
-	       //dataset.addSeries("Open Time", gl.opentimehistogram(), opentimeDist.length+1,0,opentimeDist.length);
-	       //dataset.addSeries("Generated Open Time", opentimeActual,opentimeDist.length+1,0,opentimeDist.length);
-	       //dataset.addSeries("Time Pressure", gl.timePressurehist(), timepressureDist.length+1,0,timepressureDist.length);
-	       //dataset.addSeries("Generated Time Pressure", gl.actualTimePressureHist(),timepressureDist.length+1,0,timepressureDist.length);
-	       //dataset.addSeries("Reward", gl.rewardhistogram(), rewardDist.length+1,0,rewardDist.length);
-	       //dataset.addSeries("Generated Reward", gl.actualRewardHist(),rewardDist.length+1,0,rewardDist.length);
-	       return dataset;
-	    }
 	    private XYSeriesCollection createDataset() {
 	    	XYSeriesCollection test = new XYSeriesCollection();
 
