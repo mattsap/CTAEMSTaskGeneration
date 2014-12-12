@@ -92,7 +92,7 @@ public class Sexpr {
 					Long.MAX_VALUE ;
 		long task_deadline = this.isArgWithName("deadline") ? 
 					Long.parseLong(this.getArgsOfArgWithName("deadline").get(0).id) :
-					Long.MAX_VALUE;
+					0;
 		for (; totake > 0; totake--) {
 			Method m = methods.get(totake-1);
 			Sexpr mexp = new Sexpr();
@@ -103,10 +103,21 @@ public class Sexpr {
 			earliest_start_time = Math.min(earliest_start_time, m.releaseTime);
 			task_deadline = Math.max(task_deadline, m.deadline);
 		}
+		
+		for (Sexpr arg : percentTask.args) {
+			Sexpr subtask = SexprUtils.FindTaskWithName(exprs, arg.id);
+			if (subtask.id.equals("spec_task")) {
+				
+				assert subtask.isArgWithName("earliest_start_time") : "All tasks should have an earliest_start_time. Missing in Sexpr: " + subtask.toString();
+				assert subtask.isArgWithName("deadline") : "All tasks should have a deadline. Missing in Sexpr: " + subtask.toString();
+				
+				earliest_start_time = Math.min(earliest_start_time, Long.parseLong(subtask.getArgsOfArgWithName("earliest_start_time").get(0).id));
+				task_deadline = Math.max(task_deadline, Long.parseLong(subtask.getArgsOfArgWithName("deadline").get(0).id));
+			}
+		}
 
-		//  FIX: I don't consider subtasks that have been generated
-		SexprUtils.SetField(this, "deadline", "FIXME: " + task_deadline);
-		SexprUtils.SetField(this, "earliest_start_time", "FIXME: " + earliest_start_time);
+		SexprUtils.SetField(this, "deadline", "" + task_deadline);
+		SexprUtils.SetField(this, "earliest_start_time", "" + earliest_start_time);
 	}
 	
 	public List<Sexpr> getArgsOfArgWithName(String name) {
@@ -115,7 +126,7 @@ public class Sexpr {
 				return arg.args;
 			}
 		}
-		assert false;
+		assert false : "Expected arg with name: " + name + " in Sexpr: " + this.toString();
 		return null;
 	}
 	public boolean isArgWithName(String name) {
