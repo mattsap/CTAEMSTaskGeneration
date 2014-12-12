@@ -86,7 +86,6 @@ import sexpr.Sexpr;
 		JButton reward = new JButton("Reward");
 		JButton open = new JButton("Open");
 		JButton load = new JButton("Load");
-		JButton save = new JButton ("Save Graph");
 		FlowLayout Fl2 = new FlowLayout(FlowLayout.CENTER);
 		XYSeries currentSeries;
 		String currentSeriesName;
@@ -163,7 +162,6 @@ import sexpr.Sexpr;
 	        this.TpContainer.add(SaveFile);
 	        this.TpContainer.add(Toggle);
 	        this.TpContainer.add(generate);
-	        this.TpContainer.add(save);
 	        c.gridx = 1;
 	        c.gridy = 0;
 	        c.anchor = GridBagConstraints.CENTER;
@@ -578,7 +576,7 @@ import sexpr.Sexpr;
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if(opened == false || generated == false) {
-							JOptionPane.showMessageDialog(null, "Please Make Sure you have Opened a file and Generated Distributions First");
+							JOptionPane.showMessageDialog(null, "Please Make Sure you have Opened A file and Generated Distributions First");
 						}
 						else {
 						Parser p = new Parser();
@@ -623,14 +621,44 @@ import sexpr.Sexpr;
 	    	  		
 					@Override
 					public void actionPerformed(ActionEvent e) {
-	    	  			/*
+	    	  			
 						 if(generated == false) {
 								JOptionPane.showMessageDialog(null, "Please Generate a Distribution first");
 		    	  		 }
 						 else {
-							 test.addSeries(g1);
+							 if(currentSeriesName.equals("Time Pressure")) {
+								 double[] tpgen = g1.actualTimePressureHist();
+								 XYSeries TPGenSeries = new XYSeries("Time Pressure Generated");
+								 for(int i = 0; i <= tpgen.length;i++){
+									 TPGenSeries.addOrUpdate(i, tpgen[i]);
+								 }
+								 test.addSeries(TPGenSeries);
+								}
+								else if(currentSeriesName.equals("Open")){
+									double[] OpenGen = g1.actualOpenTimeHist();
+									 XYSeries OpenGenSeries = new XYSeries("Open Time Generated");
+									 for(int i = 0; i <= OpenGen.length;i++){
+										 OpenGenSeries.addOrUpdate(i, OpenGen[i]);
+									 }
+									 test.addSeries(OpenGenSeries);								
+									 }
+								else if(currentSeriesName.equals("Reward")){
+									double[] RewardGen = g1.actualRewardHist();
+									 XYSeries RewardGenSeries = new XYSeries("Reward Generated");
+									 for(int i = 0; i <= RewardGen.length;i++){
+										 RewardGenSeries.addOrUpdate(i, RewardGen[i]);
+									 }
+									 test.addSeries(RewardGenSeries);	
+								}
+								else if(currentSeriesName.equals("Load")){
+									double[] LoadGen = g1.actualOpenTimeHist();
+									 XYSeries LoadGenSeries = new XYSeries("Load Generated");
+									 for(int i = 0; i <= LoadGen.length;i++){
+										 LoadGenSeries.addOrUpdate(i, LoadGen[i]);
+									 }
+									 test.addSeries(LoadGenSeries);									} 
 						 }
-					*/}
+					}
 	    	  		
 	    	  	 } );
 	    	  	 
