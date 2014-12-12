@@ -42,7 +42,7 @@ public class Distribute {
 				}
 				else if (lookup.containsKey(taskid)) {
 					SexprGraph lookedup = lookup.get(taskid);
-					assert !lookedup.willNeedACopy;
+					assert !lookedup.willNeedACopy : "Referenced the following from multiple places: " + lookedup.expr.toString();
 					lookedup.willNeedACopy = true;
 					node.edges.add(lookedup);
 					node.percentMethodsPerEdge.add(percent);

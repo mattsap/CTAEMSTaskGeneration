@@ -25,7 +25,7 @@ public class Code {
 		return code.charAt(index) == ')';
 	}
 	public boolean isWhiteSpace() {
-		return code.charAt(index) == ' ' || code.charAt(index) == '\t' || code.charAt(index) == '\n';
+		return code.charAt(index) == ' ' || code.charAt(index) == '\t' || code.charAt(index) == '\n' || code.charAt(index) == '\r';
 	}
 	public String nextLiteral() {
 		String ret = "";

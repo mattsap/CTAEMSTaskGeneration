@@ -26,7 +26,15 @@ public class SexprGraph {
 			ret.dotdotdot.add(exp.clone(exprs));
 		}
 		for (SexprGraph exp : edges) {
-			ret.edges.add(exp.clone(exprs));
+			SexprGraph clone = exp.clone(exprs);
+			ret.edges.add(clone);
+			List<Sexpr> args = ret.expr.getArgsOfArgWithName("subtasks");
+			for (int i = 0; i < args.size(); i++) {
+				if (args.get(i).id.equals(exp.expr.getArgsOfArgWithName("label").get(0).id)) {
+					args.get(i).id = clone.expr.getArgsOfArgWithName("label").get(0).id;
+					break;
+				}
+			}
 		}
 		return ret;
 	}
@@ -62,7 +70,8 @@ public class SexprGraph {
 
 		int count = 0;
 		for (Integer pc : thisMethodCounts) count += pc;
-		assert count <= methods.size() && count >= 0;
+		assert count <= methods.size() : "Not enough methods available for this Sexpr: " + expr.toString();
+		assert count >= 0 : "Negative counts not allowed. " + expr.toString();
 		
 		int generatedMethodsUsed = 0;
 		for (int i = thisNeedingMethods.size() - 1; i >= 0; i--) {
@@ -76,13 +85,14 @@ public class SexprGraph {
 		}
 		
 		if (edgesNeedingMethods.size() > 0) {
+			int methodsRemaining = methods.size() - generatedMethodsUsed;
 			int countWithZeroPercent = 0;
 			for (int i = edgesNeedingMethods.size() - 1; i >= 0; i--) {
 				if (edgeMethodPercentages.get(i) == 0) {
 					countWithZeroPercent++;
 				}
 				else {
-					int toUse = (edgeMethodPercentages.get(i) * methods.size()) / 100;
+					int toUse = (edgeMethodPercentages.get(i) * methodsRemaining) / 100;
 					if (i == 0 && countWithZeroPercent == 0 && dotdotdot == null) {
 						// FIX: need to pull out the multiple of CountNeeded for dotdotdot
 						toUse = methods.size() - generatedMethodsUsed;

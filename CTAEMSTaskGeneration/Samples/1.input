@@ -1,0 +1,26 @@
+(spec_task 
+	(label root)
+	(subtasks tasksof2...%40 tasksof3...%60)
+) 
+
+(spec_task 
+	(label tasksof2) 
+	(subtasks task1 Method#2)
+) 
+(spec_task 
+	(label tasksof3) 
+	(subtasks Method#3)
+)
+
+(spec_task 
+	(label task1) 
+	(subtasks task2 Method#1) 
+	(deadline 100) 
+	(earliest_start_time 0)
+)
+(spec_task
+	(label task2) 
+	(subtasks Method#1) 
+	(deadline 100) 
+	(earliest_start_time 0)
+)

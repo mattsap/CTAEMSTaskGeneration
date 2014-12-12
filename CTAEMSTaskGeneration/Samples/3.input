@@ -1,0 +1,19 @@
+(spec_task
+	(label root)
+	(subtasks task1 task2 task3)
+)
+
+(spec_task
+	(label task1)
+	(subtasks Method#1)
+)
+
+(spec_task
+	(label task2)
+	(subtasks Method#2)
+)
+
+(spec_task
+	(label task3)
+	(subtasks Method#3)
+)

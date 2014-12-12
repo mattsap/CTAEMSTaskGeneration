@@ -1,0 +1,231 @@
+
+(spec_task
+	(label root)
+	(subtasks task1 task2 task3)
+)
+(spec_task
+	(label task1)
+	(subtasks Method_GEN_16 Method_GEN_15 Method_GEN_14 Method_GEN_13)
+	(deadline 15)
+	(earliest_start_time 9)
+)
+(spec_task
+	(label task2)
+	(subtasks Method_GEN_12 Method_GEN_11 Method_GEN_10 Method_GEN_9)
+	(deadline 9)
+	(earliest_start_time 3)
+)
+(spec_task
+	(label task3)
+	(subtasks Method_GEN_8 Method_GEN_7 Method_GEN_6 Method_GEN_5 Method_GEN_4 Method_GEN_3 Method_GEN_2 Method_GEN_1)
+	(deadline 15)
+	(earliest_start_time 0)
+)
+(spec_method
+	(label Method_GEN_8)
+	(outcomes
+		(Method_GEN_8_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 3)
+	(deadline 3)
+	(arival_time 2)
+	(release_time 2)
+)
+(spec_method
+	(label Method_GEN_7)
+	(outcomes
+		(Method_GEN_7_o0
+			(density 1.0)
+			(duration-distribution 1 1.0)
+		)
+	)
+	(reward 1)
+	(deadline 2)
+	(arival_time 0)
+	(release_time 0)
+)
+(spec_method
+	(label Method_GEN_6)
+	(outcomes
+		(Method_GEN_6_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 3)
+	(deadline 15)
+	(arival_time 12)
+	(release_time 12)
+)
+(spec_method
+	(label Method_GEN_5)
+	(outcomes
+		(Method_GEN_5_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 1)
+	(deadline 12)
+	(arival_time 10)
+	(release_time 10)
+)
+(spec_method
+	(label Method_GEN_4)
+	(outcomes
+		(Method_GEN_4_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 2)
+	(deadline 10)
+	(arival_time 8)
+	(release_time 8)
+)
+(spec_method
+	(label Method_GEN_3)
+	(outcomes
+		(Method_GEN_3_o0
+			(density 1.0)
+			(duration-distribution 1 1.0)
+		)
+	)
+	(reward 2)
+	(deadline 8)
+	(arival_time 6)
+	(release_time 6)
+)
+(spec_method
+	(label Method_GEN_2)
+	(outcomes
+		(Method_GEN_2_o0
+			(density 1.0)
+			(duration-distribution 3 1.0)
+		)
+	)
+	(reward 4)
+	(deadline 6)
+	(arival_time 2)
+	(release_time 2)
+)
+(spec_method
+	(label Method_GEN_1)
+	(outcomes
+		(Method_GEN_1_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 0)
+	(deadline 2)
+	(arival_time 0)
+	(release_time 0)
+)
+(spec_method
+	(label Method_GEN_12)
+	(outcomes
+		(Method_GEN_12_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 1)
+	(deadline 9)
+	(arival_time 7)
+	(release_time 7)
+)
+(spec_method
+	(label Method_GEN_11)
+	(outcomes
+		(Method_GEN_11_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 2)
+	(deadline 7)
+	(arival_time 6)
+	(release_time 6)
+)
+(spec_method
+	(label Method_GEN_10)
+	(outcomes
+		(Method_GEN_10_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 1)
+	(deadline 6)
+	(arival_time 5)
+	(release_time 5)
+)
+(spec_method
+	(label Method_GEN_9)
+	(outcomes
+		(Method_GEN_9_o0
+			(density 1.0)
+			(duration-distribution 1 1.0)
+		)
+	)
+	(reward 0)
+	(deadline 5)
+	(arival_time 3)
+	(release_time 3)
+)
+(spec_method
+	(label Method_GEN_16)
+	(outcomes
+		(Method_GEN_16_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 4)
+	(deadline 15)
+	(arival_time 14)
+	(release_time 14)
+)
+(spec_method
+	(label Method_GEN_15)
+	(outcomes
+		(Method_GEN_15_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 4)
+	(deadline 14)
+	(arival_time 13)
+	(release_time 13)
+)
+(spec_method
+	(label Method_GEN_14)
+	(outcomes
+		(Method_GEN_14_o0
+			(density 1.0)
+			(duration-distribution 1 1.0)
+		)
+	)
+	(reward 3)
+	(deadline 13)
+	(arival_time 10)
+	(release_time 10)
+)
+(spec_method
+	(label Method_GEN_13)
+	(outcomes
+		(Method_GEN_13_o0
+			(density 1.0)
+			(duration-distribution 0 1.0)
+		)
+	)
+	(reward 2)
+	(deadline 10)
+	(arival_time 9)
+	(release_time 9)
+)

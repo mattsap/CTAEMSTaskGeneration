@@ -1,6 +1,9 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.swing.JApplet;
@@ -41,7 +44,8 @@ public class GUI extends JApplet {
 			
 			// figure out opening file
 			// replace string with contents of opened file
-			structure = p.parse("(spec_task (label hello) (subtasks ) (deadline 100) (earliest_start_time -1))(spec_task (label root) (subtasks hello Method%50 tasksof2...%40 tasksof3...%60))  (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
+			//structure = p.parse("(spec_task (label hello) (subtasks hello2 Method#1) (deadline 100) (earliest_start_time -1))(spec_task (label hello2) (subtasks Method#1) (deadline 100) (earliest_start_time -1))(spec_task (label root) (subtasks tasksof2...%40 tasksof3...%60))  (spec_task (label tasksof2) (subtasks hello Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
+			structure = p.parse(new String(Files.readAllBytes(Paths.get("C:\\dev\\workspace\\CTAEMSTaskGeneration\\CTAEMSTaskGeneration\\Samples\\3.input")),Charset.defaultCharset()));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
