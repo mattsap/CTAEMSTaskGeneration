@@ -39,7 +39,7 @@ public class GUI extends JApplet {
 	public static void main(String[] args) {
 		
 		// On File Open
-		Parser p = new Parser();
+		/*Parser p = new Parser();
 		List<Sexpr> structure = null;
 		try {
 			//structure = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
@@ -54,6 +54,7 @@ public class GUI extends JApplet {
 		}
 		//End On File Open */
 		
+		/*
 		// On Generate
 		GenerateLoad gl = new GenerateLoad();
     	
@@ -85,7 +86,7 @@ public class GUI extends JApplet {
     	
 		// On Save
     	// inserting generated methods into loaded file
-    	Distribute.ToSexprs(structure, gl);
+    	/*Distribute.ToSexprs(structure, gl);
     	
     	// get generated structure as a string
     	String finalStructure = "";
@@ -93,11 +94,13 @@ public class GUI extends JApplet {
     		finalStructure += (exp.toString());
     	}
     	//End On Save */
-    	
+    	/*
     	System.out.println(finalStructure);
     	System.out.println(gl.generated.size());
     	System.out.println(gl.methodsUsed());
 		//if (true)return;
+    	*/
+
 		SwingUtilities.invokeLater(new Runnable(){
 
 			@Override
@@ -106,39 +109,10 @@ public class GUI extends JApplet {
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
                 } catch (Exception e) {
                 }
-                GenerateLoad gl = generate();
-				for (int i = 0; i < 4; i++) {
-                JFrame frame = new JFrame("JavaFX 2 in Swing");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                
-                TestPanel tp = null;
-                switch(i) {
-                case 0:
-                	tp = new TestPanel("Input Load", gl.actualLoadHist(), "Structure Load", gl.structureloadhistogram(), gl.timeLength+1, 0, gl.timeLength);
-                	break;
-                case 1:
-                	tp = new TestPanel("Input Open Time", gl.actualOpenTimeHist(), "Structure Open Time", gl.structureopentimehistogram(), gl.timeLength+1, 0, gl.timeLength);
-                	break;
-                case 2:
-                	tp = new TestPanel("Input Reward", gl.actualRewardHist(), "Structure Reward", gl.structurerewardhistogram(), gl.maxReward+1, 0, gl.maxReward);
-                	break;
-                case 3:
-                	tp = new TestPanel("Input Time Pressure", gl.actualTimePressureHist(), "Structure Time Pressure", gl.structuretimePressurehist(), 100+1, 0, 100);
-                	break;
-                }
-                JApplet applet = new GUI(tp);
-                applet.init();
-                
-                frame.setContentPane(applet.getContentPane());
-                
-                frame.pack();
-                frame.setLocationRelativeTo(null);
-                frame.setVisible(true);
-                
-                applet.start();
+				
+                startupRelease();
 			}
-                
-            			}
+             
 			
 		});
 	}
@@ -245,5 +219,55 @@ public class GUI extends JApplet {
 		
 		return gl;
 	
+	}
+	
+	public static void startupRelease() {
+		JFrame frame = new JFrame("JavaFX 2 in Swing");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        JApplet applet = new GUI(new TestPanel());
+        applet.init();
+        
+        frame.setContentPane(applet.getContentPane());
+        
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        
+        applet.start();
+	}
+	
+	public static void startupDebug() {
+		GenerateLoad gl = generate();
+		for (int i = 0; i < 4; i++) {
+        JFrame frame = new JFrame("JavaFX 2 in Swing");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        TestPanel tp = null;
+        switch(i) {
+        case 0:
+        	tp = new TestPanel("Input Load", gl.actualLoadHist(), "Structure Load", gl.structureloadhistogram(), gl.timeLength+1, 0, gl.timeLength);
+        	break;
+        case 1:
+        	tp = new TestPanel("Input Open Time", gl.actualOpenTimeHist(), "Structure Open Time", gl.structureopentimehistogram(), gl.timeLength+1, 0, gl.timeLength);
+        	break;
+        case 2:
+        	tp = new TestPanel("Input Reward", gl.actualRewardHist(), "Structure Reward", gl.structurerewardhistogram(), gl.maxReward+1, 0, gl.maxReward);
+        	break;
+        case 3:
+        	tp = new TestPanel("Input Time Pressure", gl.actualTimePressureHist(), "Structure Time Pressure", gl.structuretimePressurehist(), 100+1, 0, 100);
+        	break;
+        }
+        JApplet applet = new GUI(tp);
+        applet.init();
+        
+        frame.setContentPane(applet.getContentPane());
+        
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        
+        applet.start();
+		}
 	}
 }
