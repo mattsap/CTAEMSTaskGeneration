@@ -132,7 +132,7 @@ public class DebugGUI extends JApplet{
 
 		List<Sexpr> structure = null;
 		try {
-			structure = SexprParser.parse(new String(Files.readAllBytes(Paths.get("C:\\dev\\workspace\\CTAEMSTaskGeneration\\CTAEMSTaskGeneration\\Samples\\3.input")),Charset.defaultCharset()));
+			structure = SexprParser.parse(new String(Files.readAllBytes(Paths.get("C:\\dev\\workspace\\CTAEMSTaskGeneration\\CTAEMSTaskGeneration\\Samples\\2.input")),Charset.defaultCharset()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
