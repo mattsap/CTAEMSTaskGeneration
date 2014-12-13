@@ -1,6 +1,8 @@
 
 	
-	import java.awt.Color;
+	import generate.Distribution;
+
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -37,9 +39,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import project.Distribute;
-import project.Generate;
 import project.GenerateLoad;
-import sexpr.Parser;
+import sexpr.SexprParser;
 import sexpr.Sexpr;
 
 	/**
@@ -286,7 +287,7 @@ import sexpr.Sexpr;
 				      if (result == JOptionPane.OK_OPTION) {
 				    	 double xvalues = Double.parseDouble(Domain.getText());
 				    	 for(int i = 0; i <= xvalues-1;i++) {
-				    	 double value = Generate.Normal(Double.parseDouble(Mean.getText()), Double.parseDouble(STD.getText()), i);
+				    	 double value = Distribution.Normal(Double.parseDouble(Mean.getText()), Double.parseDouble(STD.getText()), i);
 				    	 try{
 				    		 currentSeries.remove(i);
 				    	 }
@@ -329,7 +330,7 @@ import sexpr.Sexpr;
 					      if (result == JOptionPane.OK_OPTION) {
 					    	 int xvalues = Integer.parseInt(Domain.getText());
 					    	for(int i = 0; i <= xvalues-1;i++) {
-					    	  double value = Generate.Poisson(Double.parseDouble(Lambda.getText()), i);
+					    	  double value = Distribution.Poisson(Double.parseDouble(Lambda.getText()), i);
 						    	  try{
 						    		  currentSeries.remove(i);
 						    	  	}
@@ -565,7 +566,7 @@ import sexpr.Sexpr;
 							JOptionPane.showMessageDialog(null, "Please Make Sure you have Opened A file and Generated Distributions First");
 						}
 						else {
-						Parser p = new Parser();
+						SexprParser p = new SexprParser();
 						List<Sexpr> structure = null;
 						try {
 							//structure = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
@@ -577,7 +578,7 @@ import sexpr.Sexpr;
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						Distribute.ToSexprs(structure, g1);
+						Distribute.ToSexprs(structure, g1.generated);
 				    	
 				    	// get generated structure as a string
 				    	String finalStructure = "";

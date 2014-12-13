@@ -1,11 +1,11 @@
 package project;
 
-import sexpr.Parser;
+import sexpr.SexprParser;
 import sexpr.Sexpr;
 
-public class Method extends Task{
+public class Method {
 
-	public long arivalTime, releaseTime, duration, deadline, reward;
+	public long arrivalTime, releaseTime, duration, deadline, reward;
 	public int id;
 	public boolean becameSexpr = false;
 	
@@ -13,22 +13,18 @@ public class Method extends Task{
 		this.id = id;
 	}
 	
-	@Override
-	public long getArivalTime() {
-		return arivalTime;
+	public long getArrivalTime() {
+		return arrivalTime;
 	}
 
-	@Override
 	public long getReleaseTime() {
 		return releaseTime;
 	}
 
-	@Override
 	public long getDuration() {
 		return duration;
 	}
 
-	@Override
 	public long getDeadline() {
 		return deadline;
 	}
@@ -36,7 +32,6 @@ public class Method extends Task{
 		this.deadline = deadline;
 	}
 
-	@Override
 	public long getReward() {
 		return reward;
 	}
@@ -53,12 +48,12 @@ public class Method extends Task{
 					") " + 
 					"(reward " + reward + ")" + 
 					"(deadline " + deadline + ")" + 
-					"(arival_time " + arivalTime + ")" + 
+					"(arival_time " + arrivalTime + ")" + 
 					"(release_time " + releaseTime + ")" + 
 				")";
 	
 		try {
-			return Parser.parseExpr(sexpr);
+			return SexprParser.parseExpr(sexpr);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

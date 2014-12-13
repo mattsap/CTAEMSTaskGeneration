@@ -30,7 +30,7 @@ public class GenerateLoad {
 		while (load > aliveMethods.size()) {
 			long duration = random.nextInt(5) + 1;
 			final Method method = new Method(++generatedCount);
-			method.arivalTime = this.time;
+			method.arrivalTime = this.time;
 			method.releaseTime = this.time;
 			method.duration = duration;
 			method.deadline = this.time + duration;
@@ -237,7 +237,7 @@ public class GenerateLoad {
 			}
 			for (Integer duration : ts.durations) {
 				final Method method = new Method(++generatedCount);
-				method.arivalTime = start;
+				method.arrivalTime = start;
 				method.releaseTime = start;
 				method.deadline = start + duration;
 				
@@ -351,7 +351,7 @@ public class GenerateLoad {
 			}
 			for (Integer duration : ts.durations) {
 				final Method method = new Method(++generatedCount);
-				method.arivalTime = start;
+				method.arrivalTime = start;
 				method.releaseTime = start;
 				method.duration = (int)Math.ceil(duration * (1.0f-r.nextFloat()));
 				method.deadline = start + duration;
@@ -433,7 +433,7 @@ public class GenerateLoad {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
-			for (long i = m.arivalTime; i < m.deadline; i++) {
+			for (long i = m.arrivalTime; i < m.deadline; i++) {
 				stuff.add((double) i);
 			}
 		}
@@ -446,7 +446,7 @@ public class GenerateLoad {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
-			for (long i = m.arivalTime; i < m.deadline; i++) {
+			for (long i = m.arrivalTime; i < m.deadline; i++) {
 				stuff.add((double) i);
 			}
 		}
@@ -492,7 +492,7 @@ public class GenerateLoad {
 	public double[] opentimehistogram() {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		for(Method m : generated) {
-			stuff.add((double)(m.getDeadline() - m.getArivalTime()));
+			stuff.add((double)(m.getDeadline() - m.getArrivalTime()));
 		}
 		
 		double[] ret = new double[stuff.size()];
@@ -504,7 +504,7 @@ public class GenerateLoad {
 		for(Method m : generated) {
 			if (!m.becameSexpr)
 				continue;
-			stuff.add((double)(m.getDeadline() - m.getArivalTime()));
+			stuff.add((double)(m.getDeadline() - m.getArrivalTime()));
 		}
 		
 		double[] ret = new double[stuff.size()];
@@ -521,7 +521,7 @@ public class GenerateLoad {
 		for(Method m : generated) {
 			if (!m.becameSexpr)
 				continue;
-			double opentime = m.getDeadline() - m.getArivalTime();
+			double opentime = m.getDeadline() - m.getArrivalTime();
 			double unusedtime = opentime - m.getDuration();
 			double timepressure = unusedtime / opentime;
 			stuff.add(timepressure * 100);
@@ -538,7 +538,7 @@ public class GenerateLoad {
 		for(Method m : generated) {
 			if (!m.becameSexpr)
 				continue;
-			double opentime = m.getDeadline() - m.getArivalTime();
+			double opentime = m.getDeadline() - m.getArrivalTime();
 			double unusedtime = opentime - m.getDuration();
 			double timepressure = unusedtime / opentime;
 			stuff.add(timepressure * 100);

@@ -1,7 +1,9 @@
 package graphs;
 
 	
-	import java.awt.Color;
+	import generate.Distribution;
+
+import java.awt.Color;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -18,7 +20,6 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import project.Generate;
 import project.GenerateLoad;
 
 	/**
@@ -77,12 +78,12 @@ import project.GenerateLoad;
 		  GenerateLoad gl = new GenerateLoad();
 	    	
 		  for (int i = 1; i <= 20; i++)
-	    		gl.generateNextTimeStep((int)(300*Generate.Normal(10, 3, i)));
+	    		gl.generateNextTimeStep((int)(300*Distribution.Normal(10, 3, i)));
 			gl.generateNextTimeStep(0);
 		  
 			for (int i = 0; i < gl.generated.size(); i++) {
 				XYSeries series = new XYSeries("Method #" + (i+1));
-				series.add(gl.generated.get(i).arivalTime, i+1);
+				series.add(gl.generated.get(i).arrivalTime, i+1);
 				series.add(gl.generated.get(i).deadline, i+1);
 				dataset.addSeries(series);
 			}

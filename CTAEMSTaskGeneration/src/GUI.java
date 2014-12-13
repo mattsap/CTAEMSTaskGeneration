@@ -1,3 +1,5 @@
+import generate.Distribution;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,9 +15,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import project.Distribute;
-import project.Generate;
 import project.GenerateLoad;
-import sexpr.Parser;
+import sexpr.SexprParser;
 import sexpr.Sexpr;
 
 

@@ -150,7 +150,6 @@ public class SexprGraph {
 				this.percentMethodsPerEdge.add(0);
 			}
 		}
-		//  FIX ^^^
 		
 		//assert generatedMethodsUsed == methods.size();
 	}
@@ -179,5 +178,15 @@ public class SexprGraph {
 		}
 		
 		return count;
+	}
+	
+	public String EmitGraph() {
+		String ret = expr.toString();
+		
+		for (SexprGraph sg : edges) {
+			ret += sg.EmitGraph();
+		}
+		
+		return ret;
 	}
 }
