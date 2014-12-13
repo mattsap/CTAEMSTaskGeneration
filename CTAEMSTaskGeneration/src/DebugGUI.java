@@ -8,6 +8,10 @@ import generate.LoadFirstGenerator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.swing.JApplet;
@@ -16,8 +20,8 @@ import javax.swing.JPanel;
 
 import project.Distribute;
 import project.SexprGraph;
-import sexpr.SexprParser;
 import sexpr.Sexpr;
+import sexpr.SexprParser;
 
 
 public class DebugGUI extends JApplet{
@@ -123,31 +127,15 @@ public class DebugGUI extends JApplet{
 			}
 		});
 		
-    	int[] loadDist = new int[100];
-    	for (int i = 0; i < loadDist.length; i++)
-    		loadDist[i] = (int)(10000*Distribution.Normal(50, 20, i));
-    		//loadDist[i] = (int)(13000*Generate.Poisson(40, i/2));
     	
-    	//gl.generate(loadDist);
-    	
-    	int[] rewardDist = new int[5];
-    	for (int i = 0; i < rewardDist.length; i++)
-    		rewardDist[i] = 2;
-    	
-    	int[] opentimeDist = new int[30];
-    	for (int i = 0; i < opentimeDist.length; i++)
-    		opentimeDist[i] = (int)(10000*Distribution.Normal(15, 5, i));
-    	
-    	int[] timepressureDist = new int[100];
-    	//for (int i = 0; i < 10; i++)
-    		//timepressureDist[i] = 2;
-    	timepressureDist[10] = 1;
-    	timepressureDist[20] = 1;
-    	
-		
     	mg.generate();
 
-		List<Sexpr> structure = SexprParser.parse("(spec_task (label root) (subtasks Method%50 tasksof2...%40 tasksof3...%60))  (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
+		List<Sexpr> structure = null;
+		try {
+			structure = SexprParser.parse(new String(Files.readAllBytes(Paths.get("C:\\dev\\workspace\\CTAEMSTaskGeneration\\CTAEMSTaskGeneration\\Samples\\3.input")),Charset.defaultCharset()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		SexprGraph sg = Distribute.ToSexprs(structure, mg.getGeneratedMethods());
     	

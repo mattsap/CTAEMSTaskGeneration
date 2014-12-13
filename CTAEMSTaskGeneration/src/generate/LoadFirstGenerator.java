@@ -125,12 +125,14 @@ public class LoadFirstGenerator extends MethodGenerator {
 			}
 			for (Integer makeSpan : ts.makeSpans) {
 				final Method method = new Method(++generatedCount);
-				method.arrivalTime = arrivalTime;
-				method.releaseTime = arrivalTime;
-				method.deadline = arrivalTime + makeSpan;
+				method.setArrivalTime(arrivalTime);
+				method.setReleaseTime(arrivalTime);
+				method.setDeadline(arrivalTime + makeSpan);
 				
-				method.duration = timePressureDist.getDurationForMakeSpanAndArrivalTime(makeSpan, arrivalTime);
-				method.reward = rewardDist.getRewardWithArrivalTime(arrivalTime);
+				int duration = timePressureDist.getDurationForMakeSpanAndArrivalTime(makeSpan, arrivalTime);
+				int reward = rewardDist.getRewardWithArrivalTime(arrivalTime);
+				method.setDuration(duration);
+				method.setReward(reward);
 				
 				arrivalTime += makeSpan;
 				
@@ -147,7 +149,7 @@ public class LoadFirstGenerator extends MethodGenerator {
 	public int getMethodsUsed() {
 		int count = 0;
 		for(Method m : generated) {
-			count += m.becameSexpr ? 1: 0;
+			count += m.hasBecomeSexpr() ? 1: 0;
 		}
 		return count;
 	}
@@ -176,9 +178,9 @@ public class LoadFirstGenerator extends MethodGenerator {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
-			if (!m.becameSexpr)
+			if (!m.hasBecomeSexpr())
 				continue;
-			for (long i = m.arrivalTime; i < m.deadline; i++) {
+			for (long i = m.getArrivalTime(); i < m.getDeadline(); i++) {
 				stuff.add((double) i);
 			}
 		}
@@ -208,11 +210,12 @@ public class LoadFirstGenerator extends MethodGenerator {
 		int[] countOfPressure = new int[loadDist.getTimeScale()];
 		
 		for(Method m : generated) {
-			if (!m.becameSexpr)
+			if (!m.hasBecomeSexpr())
 				continue;
-			assert (100*(m.duration)) / (m.deadline - m.arrivalTime) <=100;
-			sumOfPressure[(int)m.arrivalTime] += (100*(m.duration)) / (m.deadline - m.arrivalTime);
-			countOfPressure[(int)m.arrivalTime]++;
+			long timePressureAsPercent = (100*(m.getDuration())) / (m.getDeadline() - m.getArrivalTime());
+			assert timePressureAsPercent >= 0 && timePressureAsPercent <= 100 : "Time Pressure not between 0-100: " + timePressureAsPercent;
+			sumOfPressure[(int)m.getArrivalTime()] += timePressureAsPercent;
+			countOfPressure[(int)m.getArrivalTime()]++;
 		}
 		
 		for (int i = 0; i < loadDist.getTimeScale(); i++) {
@@ -248,10 +251,10 @@ public class LoadFirstGenerator extends MethodGenerator {
 		int[] countOfReward = new int[loadDist.getTimeScale()];
 		
 		for(Method m : generated) {
-			if (!m.becameSexpr)
+			if (!m.hasBecomeSexpr())
 				continue;
-			sumOfReward[(int)m.arrivalTime] += m.reward;
-			countOfReward[(int)m.arrivalTime]++;
+			sumOfReward[(int)m.getArrivalTime()] += m.getReward();
+			countOfReward[(int)m.getArrivalTime()]++;
 		}
 		
 		for (int i = 0; i < loadDist.getTimeScale(); i++) {

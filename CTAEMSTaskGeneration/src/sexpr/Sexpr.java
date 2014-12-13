@@ -100,8 +100,8 @@ public class Sexpr {
 			percentTask.args.add(mexp);
 			exprs.add(m.toSexpr(mexp.id));
 			
-			earliest_start_time = Math.min(earliest_start_time, m.releaseTime);
-			task_deadline = Math.max(task_deadline, m.deadline);
+			earliest_start_time = Math.min(earliest_start_time, m.getReleaseTime());
+			task_deadline = Math.max(task_deadline, m.getDeadline());
 		}
 		
 		for (Sexpr arg : percentTask.args) {

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Random;
 
 
+@Deprecated
 public class GenerateLoad {
 
 	public ArrayList<Method> generated = new ArrayList<Method>();
@@ -21,7 +22,7 @@ public class GenerateLoad {
 	public void generateNextTimeStep(int load) {
 
 		for (int i = aliveMethods.size()-1; i >= 0; i--) {
-			if (aliveMethods.get(i).deadline <= time) {
+			if (aliveMethods.get(i).getDeadline() <= time) {
 				generated.add(aliveMethods.remove(i));
 			}
 		}
@@ -30,17 +31,17 @@ public class GenerateLoad {
 		while (load > aliveMethods.size()) {
 			long duration = random.nextInt(5) + 1;
 			final Method method = new Method(++generatedCount);
-			method.arrivalTime = this.time;
-			method.releaseTime = this.time;
-			method.duration = duration;
-			method.deadline = this.time + duration;
+			method.setArrivalTime(this.time);
+			method.setReleaseTime(this.time);
+			method.setDuration(duration);
+			method.setDeadline(this.time + duration);
 			aliveMethods.add(method);
 		}
 		
 		while (load < aliveMethods.size()) {
 			Method method = aliveMethods.remove(random.nextInt(aliveMethods.size()));
-			method.deadline = time;
-			method.duration = method.deadline - method.releaseTime;
+			method.setDeadline(time);
+			method.setDuration(method.getDeadline() - method.getArrivalTime());
 			generated.add(method);
 		}
 		
@@ -237,14 +238,14 @@ public class GenerateLoad {
 			}
 			for (Integer duration : ts.durations) {
 				final Method method = new Method(++generatedCount);
-				method.arrivalTime = start;
-				method.releaseTime = start;
-				method.deadline = start + duration;
+				method.setArrivalTime(start);
+				method.setReleaseTime(start);
+				method.setDeadline(start + duration);
 				
 				float rn = r.nextFloat();
 				for (int i = 0; i < timepressureProbabilities.length; i++) {
 					if (timepressureProbabilities[i] > rn) {
-						method.duration = (int)( ((100-i)*duration)/ 100);
+						method.setDuration((int)( ((100-i)*duration)/ 100));
 						break;
 					}
 				}
@@ -252,7 +253,7 @@ public class GenerateLoad {
 				rn = r.nextFloat();
 				for (int i = 0; i < rewardProbabilities.length; i++) {
 					if (rewardProbabilities[i] > rn) {
-						method.reward = i;
+						method.setReward(i);
 						break;
 					}
 				}
@@ -351,10 +352,10 @@ public class GenerateLoad {
 			}
 			for (Integer duration : ts.durations) {
 				final Method method = new Method(++generatedCount);
-				method.arrivalTime = start;
-				method.releaseTime = start;
-				method.duration = (int)Math.ceil(duration * (1.0f-r.nextFloat()));
-				method.deadline = start + duration;
+				method.setArrivalTime(start);
+				method.setReleaseTime(start);
+				method.setDuration((int)Math.ceil(duration * (1.0f-r.nextFloat())));
+				method.setDeadline(start + duration);
 				start += duration;
 				
 				if (extra > 0) {
@@ -371,9 +372,9 @@ public class GenerateLoad {
 		int[] counts = new int[11];
 		int maxIndex = 0;
 		for (Method method : generated) {
-			counts[(int) method.duration]++;
-			if (counts[(int)method.duration] > counts[maxIndex]) {
-				maxIndex = (int)method.duration;
+			counts[(int) method.getDuration()]++;
+			if (counts[(int)method.getDuration()] > counts[maxIndex]) {
+				maxIndex = (int)method.getDuration();
 			}
 		}
 		
@@ -433,7 +434,7 @@ public class GenerateLoad {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
-			for (long i = m.arrivalTime; i < m.deadline; i++) {
+			for (long i = m.getArrivalTime(); i < m.getDeadline(); i++) {
 				stuff.add((double) i);
 			}
 		}
@@ -446,7 +447,7 @@ public class GenerateLoad {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
-			for (long i = m.arrivalTime; i < m.deadline; i++) {
+			for (long i = m.getArrivalTime(); i < m.getDeadline(); i++) {
 				stuff.add((double) i);
 			}
 		}
@@ -464,7 +465,7 @@ public class GenerateLoad {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
-			stuff.add((double) m.reward);
+			stuff.add((double) m.getReward());
 		}
 		
 		double[] ret = new double[stuff.size()];
@@ -475,9 +476,9 @@ public class GenerateLoad {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
-			if (!m.becameSexpr)
+			if (!m.hasBecomeSexpr())
 				continue;
-			stuff.add((double) m.reward);
+			stuff.add((double) m.getReward());
 		}
 		
 		double[] ret = new double[stuff.size()];
@@ -502,7 +503,7 @@ public class GenerateLoad {
 	}public double[] structureopentimehistogram() {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		for(Method m : generated) {
-			if (!m.becameSexpr)
+			if (!m.hasBecomeSexpr())
 				continue;
 			stuff.add((double)(m.getDeadline() - m.getArrivalTime()));
 		}
@@ -519,7 +520,7 @@ public class GenerateLoad {
 	public double[] timePressurehist() {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		for(Method m : generated) {
-			if (!m.becameSexpr)
+			if (!m.hasBecomeSexpr())
 				continue;
 			double opentime = m.getDeadline() - m.getArrivalTime();
 			double unusedtime = opentime - m.getDuration();
@@ -536,7 +537,7 @@ public class GenerateLoad {
 	public double[] structuretimePressurehist() {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		for(Method m : generated) {
-			if (!m.becameSexpr)
+			if (!m.hasBecomeSexpr())
 				continue;
 			double opentime = m.getDeadline() - m.getArrivalTime();
 			double unusedtime = opentime - m.getDuration();
@@ -554,7 +555,7 @@ public class GenerateLoad {
 	public int methodsUsed() {
 		int count = 0;
 		for(Method m : generated) {
-			count += m.becameSexpr ? 1: 0;
+			count += m.hasBecomeSexpr() ? 1: 0;
 		}
 		return count;
 	}

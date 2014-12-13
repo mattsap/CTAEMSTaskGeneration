@@ -75,7 +75,8 @@ import project.GenerateLoad;
 	    
 	  private XYDataset createDataset() {
 	        final XYSeriesCollection dataset = new XYSeriesCollection();
-		  GenerateLoad gl = new GenerateLoad();
+		  
+	        GenerateLoad gl = new GenerateLoad();
 	    	
 		  for (int i = 1; i <= 20; i++)
 	    		gl.generateNextTimeStep((int)(300*Distribution.Normal(10, 3, i)));
@@ -83,8 +84,8 @@ import project.GenerateLoad;
 		  
 			for (int i = 0; i < gl.generated.size(); i++) {
 				XYSeries series = new XYSeries("Method #" + (i+1));
-				series.add(gl.generated.get(i).arrivalTime, i+1);
-				series.add(gl.generated.get(i).deadline, i+1);
+				series.add(gl.generated.get(i).getArrivalTime(), i+1);
+				series.add(gl.generated.get(i).getDeadline(), i+1);
 				dataset.addSeries(series);
 			}
 			

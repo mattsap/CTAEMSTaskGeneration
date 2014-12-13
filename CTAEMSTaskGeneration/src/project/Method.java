@@ -5,9 +5,9 @@ import sexpr.Sexpr;
 
 public class Method {
 
-	public long arrivalTime, releaseTime, duration, deadline, reward;
+	private long arrivalTime, releaseTime, duration, deadline, reward;
 	public int id;
-	public boolean becameSexpr = false;
+	private boolean hasBecomeSexpr = false;
 	
 	public Method(int id) {
 		this.id = id;
@@ -16,13 +16,22 @@ public class Method {
 	public long getArrivalTime() {
 		return arrivalTime;
 	}
+	public void setArrivalTime(long arrivalTime) {
+		this.arrivalTime = arrivalTime;
+	}
 
 	public long getReleaseTime() {
 		return releaseTime;
 	}
+	public void setReleaseTime(long releaseTime) {
+		this.releaseTime = releaseTime;
+	}
 
 	public long getDuration() {
 		return duration;
+	}
+	public void setDuration(long duration) {
+		this.duration = duration;
 	}
 
 	public long getDeadline() {
@@ -35,9 +44,12 @@ public class Method {
 	public long getReward() {
 		return reward;
 	}
+	public void setReward(long reward) {
+		this.reward = reward;
+	}
 
 	public Sexpr toSexpr(String name) {
-		becameSexpr = true;
+		hasBecomeSexpr = true;
 		String sexpr =
 				"(spec_method (label " + name + ") " + 
 					"(outcomes " + 
@@ -59,5 +71,13 @@ public class Method {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public boolean hasBecomeSexpr() {
+		return hasBecomeSexpr;
+	}
+
+	public void setHasBecomeSexpr(boolean hasBecomeSexpr) {
+		this.hasBecomeSexpr = hasBecomeSexpr;
 	}
 }
