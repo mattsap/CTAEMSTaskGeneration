@@ -1,6 +1,12 @@
 
 	
 	import generate.Distribution;
+import generate.ILoadDistribution;
+import generate.IMakeSpanDistribution;
+import generate.IRewardDistribution;
+import generate.ITimePressureDistribution;
+import generate.LoadFirstGenerator;
+import generate.MethodGenerator;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -33,15 +39,13 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import project.Distribute;
-import project.GenerateLoad;
-import sexpr.SexprParser;
 import sexpr.Sexpr;
+import sexpr.SexprParser;
 
 	/**
 	 *
@@ -87,7 +91,7 @@ import sexpr.Sexpr;
 		double PoissonV;
 		IntervalXYDataset dataset;
 		String FileText;
-		GenerateLoad g1;
+		MethodGenerator methodGenerator;
 		boolean generated = false;
 		boolean opened = false;
 
@@ -520,14 +524,53 @@ import sexpr.Sexpr;
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						g1 = new GenerateLoad();
-						int[] loadDist = convertSeries(LdSeries);
-						int[] OpenDist = convertSeries(Open);
-						int[] TpDist = convertSeries(TPSeries);
-						int[] RewardDist = convertSeries(Reward);
+						LoadFirstGenerator lfg = new LoadFirstGenerator();
+						final int[] loadDist = convertSeries(LdSeries);
+						//final int[] OpenDist = convertSeries(Open);
+						final int[] TpDist = convertSeries(TPSeries);
+						final int[] RewardDist = convertSeries(Reward);
+						
+						lfg.setLoadDist(new ILoadDistribution() {
+							
+							@Override
+							public int getTimeScale() {
+								return loadDist.length;
+							}
+							
+							@Override
+							public int getLoadAtTimeUnit(int timeUnit) {
+								return loadDist[timeUnit];
+							}
+						});
+						
+						lfg.setMakeSpanDist(new IMakeSpanDistribution() {
+							
+							@Override
+							public int getSampleMakeSpan() {
+								return 10;
+							}
+						});
+						
+						lfg.setRewardDist(new IRewardDistribution() {
+							
+							@Override
+							public int getRewardWithArrivalTime(int arrivalTime) {
+								return RewardDist[arrivalTime];
+							}
+						});
+						
+						lfg.setTimePressureDist(new ITimePressureDistribution() {
+							
+							@Override
+							public int getDurationForMakeSpanAndArrivalTime(int makeSpan,
+									int arrivalTime) {
+								return TpDist[arrivalTime] * makeSpan / 100;
+							}
+						});
 						try{
-						g1.generate(loadDist, RewardDist, OpenDist, TpDist);
-						generated = true;
+							methodGenerator = lfg;
+							methodGenerator.generate();
+							generated = true;
 						}
 						catch(Exception exp){
 							JOptionPane.showMessageDialog(null, "Error during Generation, Please check The Console");
@@ -578,7 +621,7 @@ import sexpr.Sexpr;
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						Distribute.ToSexprs(structure, g1.generated);
+						Distribute.ToSexprs(structure, methodGenerator.getGeneratedMethods());
 				    	
 				    	// get generated structure as a string
 				    	String finalStructure = "";
@@ -614,7 +657,7 @@ import sexpr.Sexpr;
 		    	  		 }
 						 else {
 							 if(currentSeriesName.equals("Time Pressure")) {
-								 double[] tpgen = g1.actualTimePressureHist();
+								 double[] tpgen = methodGenerator.histStructureTimePressure();
 								 XYSeries TPGenSeries = new XYSeries("Time Pressure Generated");
 								 for(int i = 0; i <= tpgen.length;i++){
 									 TPGenSeries.addOrUpdate(i, tpgen[i]);
@@ -622,7 +665,7 @@ import sexpr.Sexpr;
 								 test.addSeries(TPGenSeries);
 								}
 								else if(currentSeriesName.equals("Open")){
-									double[] OpenGen = g1.actualOpenTimeHist();
+									double[] OpenGen = new double[1];
 									 XYSeries OpenGenSeries = new XYSeries("Open Time Generated");
 									 for(int i = 0; i <= OpenGen.length;i++){
 										 OpenGenSeries.addOrUpdate(i, OpenGen[i]);
@@ -630,7 +673,7 @@ import sexpr.Sexpr;
 									 test.addSeries(OpenGenSeries);								
 									 }
 								else if(currentSeriesName.equals("Reward")){
-									double[] RewardGen = g1.actualRewardHist();
+									double[] RewardGen = methodGenerator.histStructureReward();
 									 XYSeries RewardGenSeries = new XYSeries("Reward Generated");
 									 for(int i = 0; i <= RewardGen.length;i++){
 										 RewardGenSeries.addOrUpdate(i, RewardGen[i]);
@@ -638,7 +681,7 @@ import sexpr.Sexpr;
 									 test.addSeries(RewardGenSeries);	
 								}
 								else if(currentSeriesName.equals("Load")){
-									double[] LoadGen = g1.actualOpenTimeHist();
+									double[] LoadGen = methodGenerator.histStructureLoad();
 									 XYSeries LoadGenSeries = new XYSeries("Load Generated");
 									 for(int i = 0; i <= LoadGen.length;i++){
 										 LoadGenSeries.addOrUpdate(i, LoadGen[i]);

@@ -14,8 +14,8 @@ public class Main {
                 } catch (Exception e) {
                 }
 				
-                //startupRelease();
-				DebugGUI.startupDebug();
+                GUI.startupRelease();
+				//DebugGUI.startupDebug();
 			}
              
 			

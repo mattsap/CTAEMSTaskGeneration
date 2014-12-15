@@ -9,7 +9,6 @@ import project.Method;
 
 public class LoadFirstGenerator extends MethodGenerator {
 	
-	private ArrayList<Method> generated = new ArrayList<Method>();
 	private ArrayList<Method> aliveMethods = new ArrayList<Method>();
 	
 	private Random random = new Random();
@@ -146,18 +145,6 @@ public class LoadFirstGenerator extends MethodGenerator {
 		}
 	}
 	
-	public int getMethodsUsed() {
-		int count = 0;
-		for(Method m : generated) {
-			count += m.hasBecomeSexpr() ? 1: 0;
-		}
-		return count;
-	}
-
-	public List<Method> getGeneratedMethods() {
-		return generated;
-	}
-	
 	public int getTimeScale() {
 		return loadDist.getTimeScale();
 	}
@@ -174,22 +161,7 @@ public class LoadFirstGenerator extends MethodGenerator {
 			ret[i] = load.get(i);
 		return ret;
 	}
-	public double[] histStructureLoad() {
-		ArrayList<Double> stuff = new ArrayList<Double>();
-		
-		for(Method m : generated) {
-			if (!m.hasBecomeSexpr())
-				continue;
-			for (long i = m.getArrivalTime(); i < m.getDeadline(); i++) {
-				stuff.add((double) i);
-			}
-		}
-		
-		double[] ret = new double[stuff.size()];
-		for (int i = 0; i < ret.length; i++)
-			ret[i] = stuff.get(i);
-		return ret;
-	}
+	
 	
 	public double[] histInputTimePressure() {
 		ArrayList<Integer> timePressure = new ArrayList<Integer>();
@@ -203,34 +175,6 @@ public class LoadFirstGenerator extends MethodGenerator {
 			ret[i] = timePressure.get(i);
 		return ret;
 	}
-	public double[] histStructureTimePressure() {
-		ArrayList<Integer> timePressure = new ArrayList<Integer>();
-		
-		int[] sumOfPressure = new int[loadDist.getTimeScale()];
-		int[] countOfPressure = new int[loadDist.getTimeScale()];
-		
-		for(Method m : generated) {
-			if (!m.hasBecomeSexpr())
-				continue;
-			long timePressureAsPercent = (100*(m.getDuration())) / (m.getDeadline() - m.getArrivalTime());
-			assert timePressureAsPercent >= 0 && timePressureAsPercent <= 100 : "Time Pressure not between 0-100: " + timePressureAsPercent;
-			sumOfPressure[(int)m.getArrivalTime()] += timePressureAsPercent;
-			countOfPressure[(int)m.getArrivalTime()]++;
-		}
-		
-		for (int i = 0; i < loadDist.getTimeScale(); i++) {
-			if (countOfPressure[i] == 0)
-				continue;
-			for (int j = sumOfPressure[i] / countOfPressure[i]; j > 0; j--) {
-				timePressure.add(i);
-			}
-		}
-		
-		double[] ret = new double[timePressure.size()];
-		for (int i = 0; i < ret.length; i++)
-			ret[i] = timePressure.get(i);
-		return ret;
-	}
 	
 	public double[] histInputReward() {
 		ArrayList<Integer> reward = new ArrayList<Integer>();
@@ -241,32 +185,6 @@ public class LoadFirstGenerator extends MethodGenerator {
 		}
 		double[] ret = new double[reward.size()];
 		for (int i = 0; i < reward.size(); i++)
-			ret[i] = reward.get(i);
-		return ret;
-	}
-	public double[] histStructureReward() {
-		ArrayList<Integer> reward = new ArrayList<Integer>();
-		
-		int[] sumOfReward = new int[loadDist.getTimeScale()];
-		int[] countOfReward = new int[loadDist.getTimeScale()];
-		
-		for(Method m : generated) {
-			if (!m.hasBecomeSexpr())
-				continue;
-			sumOfReward[(int)m.getArrivalTime()] += m.getReward();
-			countOfReward[(int)m.getArrivalTime()]++;
-		}
-		
-		for (int i = 0; i < loadDist.getTimeScale(); i++) {
-			if (countOfReward[i] == 0)
-				continue;
-			for (int j = sumOfReward[i] / countOfReward[i]; j > 0; j--) {
-				reward.add(i);
-			}
-		}
-		
-		double[] ret = new double[reward.size()];
-		for (int i = 0; i < ret.length; i++)
 			ret[i] = reward.get(i);
 		return ret;
 	}
