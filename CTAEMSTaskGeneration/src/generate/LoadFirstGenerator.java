@@ -9,8 +9,6 @@ import project.Method;
 
 public class LoadFirstGenerator extends MethodGenerator {
 	
-	private ArrayList<Method> aliveMethods = new ArrayList<Method>();
-	
 	private Random random = new Random();
 	
 	private IMakeSpanDistribution makespanDist;
@@ -29,7 +27,6 @@ public class LoadFirstGenerator extends MethodGenerator {
 	public void generate() {
 		
 		generated.clear();
-		aliveMethods.clear();
 		
 		List<TimeSlot> timeSlots = computeTimeSlots();
 		List<Integer> makespanSample = createSampleOfMakeSpans();
@@ -46,6 +43,7 @@ public class LoadFirstGenerator extends MethodGenerator {
 			return "" + start + "->" + end;
 		}
 	}
+	
 	private List<TimeSlot> computeTimeSlots() {
 		List<TimeSlot> times = new ArrayList<TimeSlot>();
 		int[] loadUsed = new int[loadDist.getTimeScale()];
@@ -128,7 +126,7 @@ public class LoadFirstGenerator extends MethodGenerator {
 				method.setReleaseTime(arrivalTime);
 				method.setDeadline(arrivalTime + makeSpan);
 				
-				int duration = timePressureDist.getDurationForMakeSpanAndArrivalTime(makeSpan, arrivalTime);
+				int duration = (int)(makeSpan * timePressureDist.getTimePressureFor(arrivalTime));
 				int reward = rewardDist.getRewardWithArrivalTime(arrivalTime);
 				method.setDuration(duration);
 				method.setReward(reward);
@@ -166,7 +164,7 @@ public class LoadFirstGenerator extends MethodGenerator {
 	public double[] histInputTimePressure() {
 		ArrayList<Integer> timePressure = new ArrayList<Integer>();
 		for (int i = 0; i < loadDist.getTimeScale(); i++) {
-			for (int j = timePressureDist.getDurationForMakeSpanAndArrivalTime(100, i); j > 0; j--) {
+			for (int j = (int)(100*timePressureDist.getTimePressureFor(i)); j > 0; j--) {
 				timePressure.add(i);
 			}
 		}

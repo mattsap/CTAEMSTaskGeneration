@@ -49,8 +49,8 @@ public abstract class MethodGenerator {
 		for(Method m : generated) {
 			if (!m.hasBecomeSexpr())
 				continue;
-			long timePressureAsPercent = (100*(m.getDuration())) / (m.getDeadline() - m.getArrivalTime());
-			assert timePressureAsPercent >= 0 && timePressureAsPercent <= 100 : "Time Pressure not between 0-100: " + timePressureAsPercent;
+			long timePressureAsPercent = (100*(m.getDeadline() - m.getArrivalTime()-m.getDuration())) / (m.getDuration());
+			//assert timePressureAsPercent >= 0 && timePressureAsPercent <= 100 : "Time Pressure not between 0-100: " + timePressureAsPercent;
 			
 			if (m.getArrivalTime() >= sumOfPressure.length) {
 				int[] newSOP = new int[(int)m.getArrivalTime()+1];

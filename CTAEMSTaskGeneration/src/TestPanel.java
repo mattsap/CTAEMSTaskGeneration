@@ -1,11 +1,11 @@
 
 	
 	import generate.Distribution;
+import generate.IDurationDistribution;
 import generate.ILoadDistribution;
-import generate.IMakeSpanDistribution;
 import generate.IRewardDistribution;
 import generate.ITimePressureDistribution;
-import generate.LoadFirstGenerator;
+import generate.LoadFirstDurationGenerator;
 import generate.MethodGenerator;
 
 import java.awt.Color;
@@ -524,7 +524,7 @@ import sexpr.SexprParser;
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						LoadFirstGenerator lfg = new LoadFirstGenerator();
+						LoadFirstDurationGenerator lfg = new LoadFirstDurationGenerator();
 						final int[] loadDist = convertSeries(LdSeries);
 						//final int[] OpenDist = convertSeries(Open);
 						final int[] TpDist = convertSeries(TPSeries);
@@ -543,10 +543,11 @@ import sexpr.SexprParser;
 							}
 						});
 						
-						lfg.setMakeSpanDist(new IMakeSpanDistribution() {
+						lfg.setDurationDist(new IDurationDistribution() {
 							
 							@Override
-							public int getSampleMakeSpan() {
+							public int getDurationAtArrivalTime(int arrivalTime) {
+								// TODO Auto-generated method stub
 								return 10;
 							}
 						});
@@ -562,9 +563,8 @@ import sexpr.SexprParser;
 						lfg.setTimePressureDist(new ITimePressureDistribution() {
 							
 							@Override
-							public int getDurationForMakeSpanAndArrivalTime(int makeSpan,
-									int arrivalTime) {
-								return TpDist[arrivalTime] * makeSpan / 100;
+							public double getTimePressureFor(int arrivalTime) {
+								return TpDist[arrivalTime]  / 100.0;
 							}
 						});
 						try{

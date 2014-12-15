@@ -1,8 +1,10 @@
 import generate.Distribution;
+import generate.IDurationDistribution;
 import generate.ILoadDistribution;
 import generate.IMakeSpanDistribution;
 import generate.IRewardDistribution;
 import generate.ITimePressureDistribution;
+import generate.LoadFirstDurationGenerator;
 import generate.LoadFirstGenerator;
 
 import java.awt.BorderLayout;
@@ -51,7 +53,7 @@ public class DebugGUI extends JApplet{
     }
 	
 	public static void startupDebug() {
-		LoadFirstGenerator mg = generate();
+		LoadFirstDurationGenerator mg = generateLFDG();
 		for (int i = 0; i < 3; i++) {
 	        JFrame frame = new JFrame("JavaFX 2 in Swing");
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,6 +84,66 @@ public class DebugGUI extends JApplet{
 	        
 	        applet.start();
 		}
+	}
+	
+	public static LoadFirstDurationGenerator generateLFDG() {
+		LoadFirstDurationGenerator mg = new LoadFirstDurationGenerator();
+    	
+		mg.setLoadDist(new ILoadDistribution() {
+			
+			@Override
+			public int getTimeScale() {
+				return 100;
+			}
+			
+			@Override
+			public int getLoadAtTimeUnit(int timeUnit) {
+				return (int)(10000*Distribution.Normal(50, 20, timeUnit));
+			}
+		});
+		
+		mg.setDurationDist(new IDurationDistribution() {
+
+			@Override
+			public int getDurationAtArrivalTime(int arrivalTime) {
+				// TODO Auto-generated method stub
+				return 10;
+			}
+		});
+		
+		mg.setRewardDist(new IRewardDistribution() {
+			
+			@Override
+			public int getRewardWithArrivalTime(int arrivalTime) {
+				// TODO Auto-generated method stub
+				return arrivalTime;
+			}
+		});
+		
+		mg.setTimePressureDist(new ITimePressureDistribution() {
+			@Override
+			public double getTimePressureFor(int arrivalTime) {
+				return Math.max(0.1, (arrivalTime%10) / 10.0);
+			}
+		});
+		
+    	
+    	mg.generate();
+
+		List<Sexpr> structure = null;
+		try {
+			structure = SexprParser.parse(new String(Files.readAllBytes(Paths.get("C:\\dev\\workspace\\CTAEMSTaskGeneration\\CTAEMSTaskGeneration\\Samples\\2.input")),Charset.defaultCharset()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		SexprGraph sg = Distribute.ToSexprs(structure, mg.getGeneratedMethods());
+    	
+    	System.out.println(sg.EmitGraph());
+    	System.out.println("Generated: " + mg.getGeneratedMethods().size());
+    	System.out.println("Used: " + mg.getMethodsUsed());
+    	
+		return mg;
 	}
 	
 	public static LoadFirstGenerator generate() {
@@ -120,10 +182,9 @@ public class DebugGUI extends JApplet{
 		
 		mg.setTimePressureDist(new ITimePressureDistribution() {
 			@Override
-			public int getDurationForMakeSpanAndArrivalTime(int makeSpan,
-					int arrivalTime) {
+			public double getTimePressureFor(int arrivalTime) {
 				// TODO Auto-generated method stub
-				return Math.max(1, ((arrivalTime%10) * makeSpan) / 10);
+				return Math.max(1, (arrivalTime%10) / 10.0);
 			}
 		});
 		

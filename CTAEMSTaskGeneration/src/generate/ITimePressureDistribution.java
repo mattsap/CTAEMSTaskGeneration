@@ -2,5 +2,5 @@ package generate;
 
 public interface ITimePressureDistribution {
 
-	public int getDurationForMakeSpanAndArrivalTime(int makeSpan, int arrivalTime);
+	public double getTimePressureFor(int arrivalTime);
 }
