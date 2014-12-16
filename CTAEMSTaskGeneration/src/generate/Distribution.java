@@ -34,4 +34,10 @@ public class Distribution {
 		}
 		return lk*enl / kf;
 	}
+	
+
+	public static double UniformRandom(double min, double max) {
+		return (Math.random() * (max - min)) + min;
+	}
+	
 }

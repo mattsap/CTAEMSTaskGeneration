@@ -10,6 +10,7 @@ import generate.MethodGenerator;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -25,6 +26,7 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -35,6 +37,7 @@ import javax.swing.event.ChangeListener;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
@@ -54,9 +57,9 @@ import sexpr.SexprParser;
 	
 	@SuppressWarnings("serial")
 	public class TestPanel extends javax.swing.JPanel {
-	    ChartPanel chartPanel;
-
-
+	    ChartPanel loadPanel;
+	    ChartPanel slackPanel;
+	    ChartPanel rewardPanel;
 	    GridBagLayout Layout = new GridBagLayout();
 	    GridBagConstraints c = new GridBagConstraints();
 	    JPanel TpContainer = new JPanel();
@@ -65,7 +68,11 @@ import sexpr.SexprParser;
 	    JSlider slidery = new JSlider(0,20);
 	    JLabel 	labelx = new JLabel();
 	    JLabel 	labely = new JLabel();
-		JFreeChart chart;
+	    JLabel 	setdomain = new JLabel();
+	    NumericTextField domaininput = new NumericTextField();
+		JFreeChart loadChart;
+		JFreeChart slackChart;
+		JFreeChart rewardChart;
 		double sliderxv;
 		double slideryv;
 		JButton Openfile = new JButton("Open File");
@@ -75,35 +82,51 @@ import sexpr.SexprParser;
 		JButton Normal = new JButton("Normal");
 		JButton Uniform = new JButton("Uniform");
 		JButton Poisson = new JButton("Poisson");
-		JButton TimePressure = new JButton("Time Pressure");
+		JButton slack = new JButton("Slack");
 		JButton reward = new JButton("Reward");
-		JButton open = new JButton("Open");
 		JButton load = new JButton("Load");
+		JButton Submit = new JButton("Submit");
+		JButton Random = new JButton("Random");
+		JButton Clear = new JButton("Clear");
 		FlowLayout Fl2 = new FlowLayout(FlowLayout.CENTER);
 		XYSeries currentSeries;
 		String currentSeriesName;
 		XYSeries LdSeries = new XYSeries("Load");
-		XYSeries TPSeries = new XYSeries("TimePressure");
-		XYSeries Open = new XYSeries("Open");
+		XYSeries slackSeries = new XYSeries("Slack");
 		XYSeries Reward = new XYSeries("Reward");
-    	XYSeriesCollection test = new XYSeriesCollection();
+    	XYSeriesCollection loadCollection = new XYSeriesCollection();
+    	XYSeriesCollection slackCollection = new XYSeriesCollection();
+    	XYSeriesCollection rewardCollection = new XYSeriesCollection();
 		double NormalV;
 		double PoissonV;
-		IntervalXYDataset dataset;
+		IntervalXYDataset loadDataset;
+		IntervalXYDataset slackDataset;
+		IntervalXYDataset rewardDataset;
 		String FileText;
 		MethodGenerator methodGenerator;
 		boolean generated = false;
 		boolean opened = false;
-
+		JPanel self = this;
+		Frame frame;
+		JPanel currentPanel;
+		double domainV;
+		double lastDomain;
 		
 		
 
 	    /**
 	     * Creates new form NewJPanel
+	     * @param frame2 
 	     */
-	    public TestPanel() {
+	    public TestPanel(JFrame frame2) {
 	    	initComponents();
-	    	createGraph();
+	    	createLoadGraph();
+	    	createSlackGraph();
+	    	createRewardGraph();
+		    this.add(slackPanel);
+		    currentSeries = slackSeries;
+		    currentPanel = slackPanel;
+	    	this.frame = frame2;
 	    }
 	    
 	  
@@ -128,10 +151,11 @@ import sexpr.SexprParser;
 	        SdContainer.add(Normal);
 	        SdContainer.add(Poisson);
 	        SdContainer.add(Uniform);
+	        SdContainer.add(Random);
 	        SdContainer.add(load);
-	        SdContainer.add(TimePressure);
-	        SdContainer.add(open);
+	        SdContainer.add(slack);
 	        SdContainer.add(reward);
+	        SdContainer.add(Clear);
 	        labely.setText("Y-VALUE : ");
 	        c.gridx = 1;
 	        c.gridy = 3;
@@ -155,6 +179,11 @@ import sexpr.SexprParser;
 	        this.TpContainer.add(SaveFile);
 	        this.TpContainer.add(Toggle);
 	        this.TpContainer.add(generate);
+	        this.TpContainer.add(setdomain);
+	        this.TpContainer.add(domaininput);
+	        this.TpContainer.add(Submit);
+	        setdomain.setText("Enter Max Time for All Graphs");
+	        domaininput.setColumns(5);
 	        c.gridx = 1;
 	        c.gridy = 0;
 	        c.anchor = GridBagConstraints.CENTER;
@@ -165,6 +194,7 @@ import sexpr.SexprParser;
 	        c.anchor = GridBagConstraints.CENTER;
 	        Layout.addLayoutComponent(SdContainer, c);
 	        ButtonListeners();
+	        domainV = 100;
 	        
 	    }    
 	    
@@ -189,17 +219,38 @@ import sexpr.SexprParser;
 	    
 	                  
 
-	  public final void createGraph() {
-	        dataset = createDataset();
-	        chart = createChart(dataset);
-	        chartPanel = new ChartPanel(chart);
-	        chartPanel.setSize(400, 400);	        
-	        this.add(chartPanel);
+	  public final void createLoadGraph() {
+	        loadDataset = createLoadDataset();
+	        loadChart = createLoadChart(loadDataset);
+	        loadPanel = new ChartPanel(loadChart);
+	        loadPanel.setSize(400, 400);
+	       
+
+	    }
+	  
+	  public final void createSlackGraph() {
+	        slackDataset = createSlackDataset();
+	        slackChart = createSlackChart(slackDataset);
+	        slackPanel = new ChartPanel(slackChart);
+	        slackPanel.setSize(400, 400);
 	        c.gridx = 1;
 	        c.gridy = 1;
 	        c.anchor = GridBagConstraints.CENTER;
-	        Layout.addLayoutComponent(chartPanel, c);
-	        sliderx.setValue(0);
+	        Layout.addLayoutComponent(slackPanel, c);
+	       
+	        
+	  }
+	  
+	  public final void createRewardGraph() {
+	        rewardDataset = createRewardDataset();
+	        rewardChart = createRewardChart(rewardDataset);
+	        rewardPanel = new ChartPanel(rewardChart);
+	        rewardPanel.setSize(400, 400);	        
+	       
+	  }
+	  
+	  public void ButtonListeners() {
+		    sliderx.setValue(0);
 			slidery.setValue(0);
 		
 	        sliderx.addChangeListener(new ChangeListener(){
@@ -218,7 +269,7 @@ import sexpr.SexprParser;
 			        catch(Exception er){
 			        	
 			        }
-					System.out.println(sliderxv);
+			        self.updateUI();
 					}
 					
 				}
@@ -233,32 +284,25 @@ import sexpr.SexprParser;
 						JOptionPane.showMessageDialog(null, "Please Select A Type Of Graph Before Trying To Plot A Distribution");
 					}
 					else {
-					slideryv = ((JSlider) e.getSource()).getValue();
-			        labely.setText("Y-VALUE : " + String.valueOf(slidery.getValue()));
+						slideryv = ((JSlider) e.getSource()).getValue();
+				        labely.setText("Y-VALUE : " + String.valueOf(slidery.getValue()));
 
 					try {
 						currentSeries.remove(sliderxv);
-						//currentSeries.
-						System.out.println(sliderxv + " removed");
+						self.updateUI();
 					}
 					catch(Exception ex) {
 						currentSeries.addOrUpdate(sliderxv,slideryv);
-						System.out.println(slideryv);
 					}
 					
 					
 					currentSeries.addOrUpdate(sliderxv,slideryv);
-					System.out.println(slideryv);
 					}
 					
 				}
 					
 				
 			});
-
-	    }
-	  
-	  public void ButtonListeners() {
 	    	  Normal.addActionListener(new ActionListener() {
 	    		  
 				@Override
@@ -272,8 +316,7 @@ import sexpr.SexprParser;
 					  Mean.setColumns(5);
 				      NumericTextField STD = new NumericTextField();
 				      STD.setColumns(5);
-				      NumericTextField Domain = new NumericTextField();
-				      Domain.setColumns(5);
+				   
 
 
 				      JPanel myPanel = new JPanel();
@@ -283,29 +326,76 @@ import sexpr.SexprParser;
 				      myPanel.add(new JLabel("Standard Deviation:"));
 				      myPanel.add(STD);
 				      myPanel.add(Box.createHorizontalStrut(4)); // a spacer
-				      myPanel.add(new JLabel("Domain:"));
-				      myPanel.add(Domain);
+				     
 
 				      int result = JOptionPane.showConfirmDialog(null, myPanel, 
-				               "Please Enter Mean, Standard Deviation, and Domain Values", JOptionPane.OK_CANCEL_OPTION);
+				               "Please Enter Mean, Standard Deviation", JOptionPane.OK_CANCEL_OPTION);
 				      if (result == JOptionPane.OK_OPTION) {
-				    	 double xvalues = Double.parseDouble(Domain.getText());
-				    	 for(int i = 0; i <= xvalues-1;i++) {
-				    	 double value = Distribution.Normal(Double.parseDouble(Mean.getText()), Double.parseDouble(STD.getText()), i);
-				    	 try{
-				    		 currentSeries.remove(i);
+				    	 for(int i = 0; i <= domainV;i++) {
+				    		 double value = Distribution.Normal(Double.parseDouble(Mean.getText()), Double.parseDouble(STD.getText()), i);
+					    	 try{
+					    		 currentSeries.remove(i);
+					    	 }
+					    	 catch(Exception exp){
+					    		 currentSeries.addOrUpdate(i,value);
+	
+					    	 }
+					    	 finally{
+								  	self.updateUI();
+					    	 }
 				    	 }
-				    	 catch(Exception exp){
-				    		 currentSeries.addOrUpdate(i,value);
-
-				    	 }
-				    	 finally{
-								chartPanel.validate();
-				    	 }
-				    	 		}
 				      }
-				    	 	}
-						}});
+				    }
+				 }});
+	    	  Random.addActionListener(new ActionListener() {
+	    		  
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						
+						if(currentSeries == null){
+							JOptionPane.showMessageDialog(null, "Please Select A Type Of Graph Before Trying To Plot A Distribution");
+						}
+						else {
+						  NumericTextField min = new NumericTextField();
+						  min.setColumns(5);
+					      NumericTextField max = new NumericTextField();
+					      max.setColumns(5);
+					   
+
+
+					      JPanel myPanel = new JPanel();
+					      myPanel.add(new JLabel("Minimum Range:"));
+					      myPanel.add(min);
+					      myPanel.add(Box.createHorizontalStrut(4)); // a spacer
+					      myPanel.add(new JLabel("Maximum Range:"));
+					      myPanel.add(max);
+					      myPanel.add(Box.createHorizontalStrut(4)); // a spacer
+					     
+
+					      int result = JOptionPane.showConfirmDialog(null, myPanel, 
+					               "Please Enter Minimum and Maximum Time Values", JOptionPane.OK_CANCEL_OPTION);
+					      if (result == JOptionPane.OK_OPTION) {
+					    	  if(Double.parseDouble(min.getText()) > Double.parseDouble(max.getText())) {
+									JOptionPane.showMessageDialog(null, "Minimum Range is Greater than Maximum Range, Please Re-input Values");
+					    	  }
+					    	  else {
+						    	 for(int i = 0; i <= domainV;i++) {
+						    		 double value = Distribution.UniformRandom(Double.parseDouble(min.getText()), Double.parseDouble(max.getText()));
+							    	 try{
+							    		 currentSeries.remove(i);
+							    	 }
+							    	 catch(Exception exp){
+							    		 currentSeries.addOrUpdate(i,value);
+			
+							    	 }
+							    	 finally{
+										  	self.updateUI();
+							    	 }
+						    	 }
+					    	 }
+					      }
+					    }
+					 }});
 	    	  
 	    	  
 	    	  Poisson.addActionListener(new ActionListener() {
@@ -317,23 +407,18 @@ import sexpr.SexprParser;
 						else {
 						  NumericTextField Lambda = new NumericTextField();
 						  Lambda.setColumns(5);
-						  NumericTextField Domain = new NumericTextField();
-						  Domain.setColumns(5);
+						
 
 					    
 					      JPanel myPanel = new JPanel();
 					      myPanel.add(new JLabel("Lambda:"));
 					      myPanel.add(Lambda);
-					      myPanel.add(Box.createHorizontalStrut(5)); // a spacer
-					      myPanel.add(new JLabel("Domain:"));
-					      myPanel.add(Domain);
-					      
+				
 
 					      int result = JOptionPane.showConfirmDialog(null, myPanel, 
-					               "Please Enter Lambda and Domain", JOptionPane.OK_CANCEL_OPTION);
+					               "Please Enter Lambda", JOptionPane.OK_CANCEL_OPTION);
 					      if (result == JOptionPane.OK_OPTION) {
-					    	 int xvalues = Integer.parseInt(Domain.getText());
-					    	for(int i = 0; i <= xvalues-1;i++) {
+					    	for(int i = 0; i <= domainV;i++) {
 					    	  double value = Distribution.Poisson(Double.parseDouble(Lambda.getText()), i);
 						    	  try{
 						    		  currentSeries.remove(i);
@@ -342,10 +427,11 @@ import sexpr.SexprParser;
 							    	  currentSeries.addOrUpdate(i,value);
 						    	  	}
 						    	  currentSeries.addOrUpdate(i,value);
-					    			}
-					      		}
+						    	  self.updateUI();
+					    	}
+					      }
 						}
-							}});
+					}});
 	    	  
 	    	  Uniform.addActionListener(new ActionListener(){
 
@@ -356,169 +442,169 @@ import sexpr.SexprParser;
 					JOptionPane.showMessageDialog(null, "Please Select A Type Of Graph Before Trying To Plot A Distribution");
 				}
 				else {
-				NumericTextField Value = new NumericTextField();
-				Value.setColumns(5);
-				NumericTextField Domain = new NumericTextField();
-				Domain.setColumns(5);
-				JPanel myPanel = new JPanel();
-			    myPanel.add(new JLabel("Value:"));
-				myPanel.add(Value);
-			    myPanel.add(new JLabel("Domain:"));
-				myPanel.add(Domain);
-				int result = JOptionPane.showConfirmDialog(null, myPanel, 
-			               "Please Enter Value", JOptionPane.OK_CANCEL_OPTION);
-			      if (result == JOptionPane.OK_OPTION) {
-			    	  int xValues = Integer.parseInt(Domain.getText());
-			    	  for(double i = 0; i <= xValues-1; i++ ){
-			    		  try{
-			    			  currentSeries.remove(i);
-			    		  }
-			    		  catch(Exception ex){
-					    	  currentSeries.addOrUpdate(i, Double.parseDouble(Value.getText()));
-
-			    		  }
-			    	  currentSeries.addOrUpdate(i, Double.parseDouble(Value.getText()));
-			    	  }
-			      }
-
-					
-				}
+					NumericTextField Value = new NumericTextField();
+					Value.setColumns(5);
+					NumericTextField Domain = new NumericTextField();
+					Domain.setColumns(5);
+					NumericTextField EndDomain = new NumericTextField();
+					EndDomain.setColumns(5);
+					JPanel myPanel = new JPanel();
+				    myPanel.add(new JLabel("Value:"));
+					myPanel.add(Value);
+				    myPanel.add(new JLabel("Start Domain:"));
+					myPanel.add(Domain);
+					myPanel.add(new JLabel("Stop Domain:"));
+					myPanel.add(EndDomain);
+					int result = JOptionPane.showConfirmDialog(null, myPanel, 
+				               "Please Enter Value", JOptionPane.OK_CANCEL_OPTION);
+				      if (result == JOptionPane.OK_OPTION) {
+				    	  int xEnd = Integer.parseInt(EndDomain.getText());
+				    	  int xStart = Integer.parseInt(Domain.getText());
+				    	  if(xStart > xEnd) {
+								JOptionPane.showMessageDialog(null, "Minimum Value is Greater than Maximum Values, Please Re-input Values");
+				    	  }
+				    	  else {
+				    		  
+				    	  
+					    	  for(int i = xStart; i <= xEnd; i++ ){
+					    		  try{
+					    			  currentSeries.remove(i);
+					    			  self.updateUI();
+					    		  }
+					    		  catch(Exception ex){
+							    	  currentSeries.addOrUpdate(i, Double.parseDouble(Value.getText()));
+					    		  	}
+					    		  currentSeries.addOrUpdate(i, Double.parseDouble(Value.getText()));
+					    	  }
+				    	  }
+				      }
+					}
 				}	  
 	    	  });
 	    	  load.addActionListener(new ActionListener(){
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if(currentSeries == null) {
+					self.validate();
+					if(currentSeries == null){
 						currentSeries = LdSeries;
 						currentSeriesName = "Load";
-				    	test.removeSeries(TPSeries);
-				    	test.removeSeries(Open);
-				    	test.removeSeries(Reward);
+						currentPanel = loadPanel;
+						
+				        c.gridx = 1;
+				        c.gridy = 1;
+				        c.anchor = GridBagConstraints.CENTER;
+					    self.add(loadPanel);
+				        Layout.addLayoutComponent(loadPanel, c);
+				    	self.updateUI();
 					}
-					else{
-						if(currentSeriesName.equals("Time Pressure")) {
-							TPSeries = currentSeries;
-						}
-						else if(currentSeriesName.equals("Open")){
-							Open = currentSeries;
-						}
-						else if(currentSeriesName.equals("Reward")){
-							Reward = currentSeries;
-						}
-						else if(currentSeriesName.equals("Load")){
-							LdSeries = currentSeries;
-						} 
-					}
-					currentSeries = LdSeries;
-					currentSeriesName = "Load";
-					chartPanel.validate();
-
+					else {
+			        	self.remove(currentPanel);
+						currentSeries = LdSeries;
+						currentSeriesName = "Load";
+						currentPanel = loadPanel;
+						
+				        c.gridx = 1;
+				        c.gridy = 1;
+				        c.anchor = GridBagConstraints.CENTER;
+					    self.add(currentPanel);
+				        Layout.addLayoutComponent(loadPanel, c);
+				    	self.updateUI();;
+					}	
 					
 				}
 	    		  
 	    	  });
 	    	  
-	    	  TimePressure.addActionListener(new ActionListener(){
+	    	  slack.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						if(currentSeries == null) {
-							currentSeries = TPSeries;
-							currentSeriesName = "Time Pressure";
-							test.removeSeries(LdSeries);
-					    	test.removeSeries(Open);
-					    	test.removeSeries(Reward);
+						self.validate();
+						if(currentSeries == null){
+							currentSeries = slackSeries;
+							currentSeriesName = "Slack";
+							currentPanel = slackPanel;
+							c.gridx = 1;
+						    c.gridy = 1;
+						    c.anchor = GridBagConstraints.CENTER;
+						    self.add(currentPanel);
+						    Layout.addLayoutComponent(slackPanel, c);
+						    self.updateUI();
 						}
-						else{
-							if(currentSeriesName.equals("Time Pressure")) {
-								test.removeSeries(TPSeries);
-								TPSeries = currentSeries;
-							}
-							else if(currentSeriesName.equals("Open")){
-						    	test.removeSeries(Open);
-								Open = currentSeries;
-							}
-							else if(currentSeriesName.equals("Reward")){
-						    	test.removeSeries(Reward);
-								Reward = currentSeries;
-							}
-							else if(currentSeriesName.equals("Load")){
-								test.removeSeries(LdSeries);
-								LdSeries = currentSeries;
-							} 
+						else {
+				        	self.remove(currentPanel);
+							currentSeries = slackSeries;
+							currentSeriesName = "Slack";
+							currentPanel = slackPanel;
+							c.gridx = 1;
+						    c.gridy = 1;
+						    c.anchor = GridBagConstraints.CENTER;
+						    self.add(currentPanel);
+						    Layout.addLayoutComponent(slackPanel, c);
+						    self.updateUI();
 						}
-				    	test.addSeries(TPSeries);
-				  
-						currentSeries = TPSeries;
-						currentSeriesName = "Time Pressure";
+						    
+
+						
+						
 					}
 		    		  
 		    	  });
 	    	  
-	    	  	open.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if(currentSeries == null) {
-							currentSeries = Open;
-							currentSeriesName = "Open";
-							test.removeSeries(LdSeries);
-					    	test.removeSeries(TPSeries);
-					    	test.removeSeries(Reward);						}
-						else{
-							if(currentSeriesName.equals("Time Pressure")) {
-								TPSeries = currentSeries;
-							}
-							else if(currentSeriesName.equals("Open")){
-								Open = currentSeries;
-							}
-							else if(currentSeriesName.equals("Reward")){
-								Reward = currentSeries;
-							}
-							else if(currentSeriesName.equals("Load")){
-								LdSeries = currentSeries;
-							}
-							currentSeries = Open;
-							currentSeriesName = "Open";
-							
-						}
-						
-					}
-		    		  
-		    	  });
+	    	  	
 	    	  	reward.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						if(currentSeries == null) {
+						self.validate();
+						if(currentSeries == null){
 							currentSeries = Reward;
 							currentSeriesName = "Reward";
-							test.removeSeries(LdSeries);
-					    	test.removeSeries(TPSeries);
-					    	test.removeSeries(Open);
-							createChart(dataset);
-						}
-						else{
-							if(currentSeriesName.equals("Time Pressure")) {
-								TPSeries = currentSeries;
-							}
-							else if(currentSeriesName.equals("Open")){
-								Open = currentSeries;
-							}
-							else if(currentSeriesName.equals("Reward")){
-								Reward = currentSeries;
-						    	test.removeSeries(Reward);
+							currentPanel = rewardPanel;
+							c.gridx = 1;
+						    c.gridy = 1;
+						    c.anchor = GridBagConstraints.CENTER;
+						    self.add(rewardPanel);
+						    Layout.addLayoutComponent(rewardPanel, c);
+						    self.updateUI();
 
-							}
-							else if(currentSeriesName.equals("Load")){
-								LdSeries = currentSeries;
-							} 
-						
-						currentSeries = Reward;
-						currentSeriesName = "Reward";
+							
 						}
+						else {
+							self.remove(currentPanel);
+							currentSeries = Reward;
+							currentSeriesName = "Reward";
+							currentPanel = rewardPanel;
+							c.gridx = 1;
+						    c.gridy = 1;
+						    c.anchor = GridBagConstraints.CENTER;
+						    self.add(rewardPanel);
+						    Layout.addLayoutComponent(rewardPanel, c);
+						    self.updateUI();
+
+						}
+						
 						
 					}
 		    		  
 		    	  });
+	    	  	Clear.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try{
+							currentSeries.clear();
+						}
+						catch(Exception exp) {
+							self.updateUI();
+						}
+						finally{
+							self.updateUI();
+						}
+						
+						
+					}
+	    	  		
+	    	  	});
 	    	  	
 	    	  	generate.addActionListener(new ActionListener(){
 
@@ -527,7 +613,7 @@ import sexpr.SexprParser;
 						LoadFirstDurationGenerator lfg = new LoadFirstDurationGenerator();
 						final int[] loadDist = convertSeries(LdSeries);
 						//final int[] OpenDist = convertSeries(Open);
-						final int[] TpDist = convertSeries(TPSeries);
+						final int[] TpDist = convertSeries(slackSeries);
 						final int[] RewardDist = convertSeries(Reward);
 						
 						lfg.setLoadDist(new ILoadDistribution() {
@@ -574,6 +660,7 @@ import sexpr.SexprParser;
 						}
 						catch(Exception exp){
 							JOptionPane.showMessageDialog(null, "Error during Generation, Please check The Console");
+							exp.printStackTrace();
 							generated = false;
 						}
 					}
@@ -612,10 +699,7 @@ import sexpr.SexprParser;
 						SexprParser p = new SexprParser();
 						List<Sexpr> structure = null;
 						try {
-							//structure = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
 							
-							// figure out opening file
-							// replace string with contents of opened file
 							structure = p.parse(FileText);
 						} catch (Exception e1) {
 							// TODO Auto-generated catch block
@@ -656,29 +740,24 @@ import sexpr.SexprParser;
 								JOptionPane.showMessageDialog(null, "Please Generate a Distribution first");
 		    	  		 }
 						 else {
-							 if(currentSeriesName.equals("Time Pressure")) {
+							 if(currentSeriesName.equals("Slack")) {
 								 double[] tpgen = methodGenerator.histStructureTimePressure();
 								 XYSeries TPGenSeries = new XYSeries("Time Pressure Generated");
 								 for(int i = 0; i <= tpgen.length;i++){
 									 TPGenSeries.addOrUpdate(i, tpgen[i]);
 								 }
-								 test.addSeries(TPGenSeries);
+								 slackCollection.addSeries(TPGenSeries);
+								 self.updateUI();
 								}
-								else if(currentSeriesName.equals("Open")){
-									double[] OpenGen = new double[1];
-									 XYSeries OpenGenSeries = new XYSeries("Open Time Generated");
-									 for(int i = 0; i <= OpenGen.length;i++){
-										 OpenGenSeries.addOrUpdate(i, OpenGen[i]);
-									 }
-									 test.addSeries(OpenGenSeries);								
-									 }
+								
 								else if(currentSeriesName.equals("Reward")){
 									double[] RewardGen = methodGenerator.histStructureReward();
 									 XYSeries RewardGenSeries = new XYSeries("Reward Generated");
 									 for(int i = 0; i <= RewardGen.length;i++){
 										 RewardGenSeries.addOrUpdate(i, RewardGen[i]);
 									 }
-									 test.addSeries(RewardGenSeries);	
+									 rewardCollection.addSeries(RewardGenSeries);
+									 self.updateUI();
 								}
 								else if(currentSeriesName.equals("Load")){
 									double[] LoadGen = methodGenerator.histStructureLoad();
@@ -686,124 +765,93 @@ import sexpr.SexprParser;
 									 for(int i = 0; i <= LoadGen.length;i++){
 										 LoadGenSeries.addOrUpdate(i, LoadGen[i]);
 									 }
-									 test.addSeries(LoadGenSeries);									} 
+									 loadCollection.addSeries(LoadGenSeries);
+									 self.updateUI();
+								} 
 						 }
 					}
 	    	  		
-	    	  	 } );
+	    	  	 });
+	    	  	 Submit.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						lastDomain = domainV;
+						domainV = Double.parseDouble(domaininput.getText());
+						clearExtra(lastDomain);
+						slackChart.getXYPlot().getDomainAxis().setRange(0, domainV);
+						loadChart.getXYPlot().getDomainAxis().setRange(0, domainV);
+						rewardChart.getXYPlot().getDomainAxis().setRange(0, domainV);
+						self.updateUI();
+						
+						
+					}
+	    	  		 
+	    	  	 });
 	    	  	 
 	      	}
+	  
+	  public void clearExtra(double lastDomain2){
+		  for(double i = domainV+1; i <= lastDomain2; i++ ){
+			  try{
+			  currentSeries.remove(i);
+			  }
+			  catch(Exception e){
+				  
+			  }
+		  }
+	  }
 	  
 		  
 	  	
 	    
-	    private XYSeriesCollection createDataset() {
-	    	XYSeriesCollection test = new XYSeriesCollection();
+	    private XYSeriesCollection createLoadDataset() {
 
 	    	
-	    	/*
-	    	GenerateLoad gl = new GenerateLoad();
-	    	
-	    	int[] loadDist = new int[100];
-	    	for (int i = 0; i < loadDist.length; i++)
-	    	loadDist[i] = (int)(30000*Generate.Normal(50, 30, i));
-	    	//	loadDist[i] = (int)(13000*Generate.Poisson(14, i));
-	    	
-	    	//gl.generate(loadDist);
-	    	
-	    	int[] rewardDist = new int[5];
-	    	for (int i = 0; i < rewardDist.length; i++)
-	    		rewardDist[i] = 2;
-	    	
-	    	int[] opentimeDist = new int[15];
-	    	for (int i = 10; i < opentimeDist.length; i++)
-	    		opentimeDist[i] = 2;
-	    	
-	    	int[] timepressureDist = new int[100];
-	    	//for (int i = 0; i < 10; i++)
-	    		//timepressureDist[i] = 2;
-	    	timepressureDist[10] = 1;
-	    	timepressureDist[20] = 1;
-	    	
-			
-	    	gl.generate(loadDist, rewardDist, opentimeDist, timepressureDist);
-
-	    	Parser p = new Parser();
-			List<Sexpr> structure = null;
-			try {
-				//structure = p.parse("(spec_task (label root) (subtasks task1%50 task3%20 IdontExist useless...) ) (spec_task (label task1) (subtasks Method%75 task2) (deadline 100)) (spec_task (label task2) (subtasks Method%30) (world 2)) (spec_task (label task3) (subtasks Method%100)) (spec_task (label useless) (subtasks Method#1))");
-				
-				// figure out opening file
-				// replace string with contents of opened file
-				structure = p.parse("(spec_task (label root) (subtasks Method%50 tasksof2...%40 tasksof3...%60))  (spec_task (label tasksof2) (subtasks Method#2)) (spec_task (label tasksof3) (subtasks Method#3))");
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			Distribute.ToSexprs(structure, gl);
-	    	
-	    	// get generated structure as a string
-	    	String finalStructure = "";
-	    	for (Sexpr exp : structure) {
-	    		finalStructure += (exp.toString());
-	    	}
-	    	//End On Save 
-	    	
-	    	System.out.println(finalStructure);
-	    
-	    	/*
-	    	
-	    	int value = 0;
-	    	for (int i = 1; i <= 20; i++)
-	    		gl.generateNextTimeStep((int)(300*Generate.Normal(10, 3, i)));
-	    		//gl.generateNextTimeStep((int)(300*Generate.Laplace(10, 3, i)));
-	    		//gl.generateNextTimeStep((int)(300*Generate.Exponential(1, 20, i)));
-	    		//gl.generateNextTimeStep((int)(700 * Generate.Poisson(4, i)));
-	    		//gl.generateNextTimeStep((value += (int)(700 * Generate.Poisson(10, i))));
-	    	gl.generateNextTimeStep(0);
-	    	
-	    	double[] opentimeActual = new double[gl.generated.size()];
-	    	int sumOpenTime = 0;
-			for (int i = 0; i < opentimeDist.length; i++)
-				sumOpenTime += opentimeDist[i];
-			int countO = 0;
-			for (int i = 0; i < opentimeDist.length; i++)
-				for (int j = 0; j < opentimeDist[i] * opentimeActual.length / sumOpenTime; j++)
-					opentimeActual[countO++] = i;
-	    	   */
-	       //HistogramDataset dataset = new HistogramDataset();
-	       
-	       //dataset.addSeries("Load", loadDist,loadDist.length+1,0,loadDist.length);
-	       //dataset.addSeries("Actual Load", gl.loadhistogram(),loadDist.length+1,0,loadDist.length);
-	       //dataset.addSeries("Open Time", gl.opentimehistogram(), opentimeDist.length+1,0,opentimeDist.length);
-	       //dataset.addSeries("Actual Open Time", opentimeActual,opentimeDist.length+1,0,opentimeDist.length);
-	       //dataset.addSeries("Time Pressure", gl.timePressurehist(), timepressureDist.length+1,0,timepressureDist.length);
-	       //dataset.addSeries("Actual Time Pressure", gl.actualTimePressureHist(),timepressureDist.length+1,0,timepressureDist.length);
-	       //dataset.addSeries("Reward", gl.rewardhistogram(), rewardDist.length+1,0,rewardDist.length);
-	       //dataset.addSeries("Actual Reward", gl.actualRewardHist(),rewardDist.length+1,0,rewardDist.length);
-	       //dataset.addSeries("seies", Series, 2);
+	  
 	    	try{
-	    	test.addSeries(LdSeries);
-	    	test.addSeries(TPSeries);
-	    	test.addSeries(Open);
-	    	test.addSeries(Reward);
+	    		loadCollection.addSeries(LdSeries);
+	    
 	    	}
 	    	catch(Exception exp) {
 	    		
 	    	}
 	   
 	       
-	       return test;
+	       return loadCollection;
 	        
 	    }
 	    
-	    private JFreeChart createChart(final IntervalXYDataset dataset) {
+	    private XYSeriesCollection createSlackDataset() {
 	    	
-			final JFreeChart chart;
-	        chart = ChartFactory.createHistogram(
-	                "Histogram Demo",      // chart title
-	                "Session",                      // x axis label
-	                "Value",                      // y axis label
+	    	try {
+	    		slackCollection.addSeries(slackSeries);
+	    	}
+	    	catch(Exception exp) {
+	    		
+	    	}
+	    	return slackCollection;
+	    	
+	    }
+	    
+	    private XYSeriesCollection createRewardDataset() {
+	    	
+	    	try {
+	    		rewardCollection.addSeries(Reward);
+	    	}
+	    	catch(Exception exp) {
+	    		
+	    	}
+	    	return rewardCollection;
+	    	
+	    }
+	    
+	    private JFreeChart createLoadChart(final IntervalXYDataset dataset) {
+	    	
+	        loadChart = ChartFactory.createHistogram(
+	                "Load",      // chart title
+	                "Time",                      // x axis label
+	                "Load",                      // y axis label
 	                dataset,                  // data
 	                PlotOrientation.VERTICAL,
 	                true,                     // include legend
@@ -812,21 +860,81 @@ import sexpr.SexprParser;
 	        );
 
 			// NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
-			chart.setBackgroundPaint(Color.white);
+			loadChart.setBackgroundPaint(Color.white);
 
-			chart.setBackgroundPaint(new Color(230,230,230));
-	                 XYPlot xyplot = (XYPlot)chart.getPlot();
+			loadChart.setBackgroundPaint(new Color(230,230,230));
+	                 XYPlot xyplot = (XYPlot)loadChart.getPlot();
 	                 xyplot.setForegroundAlpha(0.7F);
 	                 xyplot.setBackgroundPaint(Color.WHITE);
 	                 xyplot.setDomainGridlinePaint(new Color(150,150,150));
 	                 xyplot.setRangeGridlinePaint(new Color(150,150,150));
 	                 XYBarRenderer xybarrenderer = (XYBarRenderer)xyplot.getRenderer();
-	     
+	                 NumberAxis domain = (NumberAxis) xyplot.getDomainAxis();
+	                 domain.setRange(0.00, domainV);
+	                 xybarrenderer.setShadowVisible(false);
+	                 xybarrenderer.setBarPainter(new StandardXYBarPainter()); 
+			return loadChart;
+		}
+	    
+	    private JFreeChart createSlackChart(final IntervalXYDataset dataset) {
+	    	
+	        slackChart = ChartFactory.createHistogram(
+	                "Slack",      // chart title
+	                "Time",                      // x axis label
+	                "Slack",                      // y axis label
+	                dataset,                  // data
+	                PlotOrientation.VERTICAL,
+	                true,                     // include legend
+	                true,                     // tooltips
+	                false                     // urls
+	        );
+
+			// NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
+			slackChart.setBackgroundPaint(Color.white);
+
+			slackChart.setBackgroundPaint(new Color(230,230,230));
+	                 XYPlot xyplot = (XYPlot)slackChart.getPlot();
+	                 xyplot.setForegroundAlpha(0.7F);
+	                 xyplot.setBackgroundPaint(Color.WHITE);
+	                 xyplot.setDomainGridlinePaint(new Color(150,150,150));
+	                 xyplot.setRangeGridlinePaint(new Color(150,150,150));
+	                 XYBarRenderer xybarrenderer = (XYBarRenderer)xyplot.getRenderer();
+	                 NumberAxis domain = (NumberAxis) xyplot.getDomainAxis();
+	                 domain.setRange(0.00, domainV);
 	                 xybarrenderer.setShadowVisible(false);
 	                 xybarrenderer.setBarPainter(new StandardXYBarPainter()); 
 //	    xybarrenderer.setDrawBarOutline(false);
-			return chart;
+			return slackChart;
 		}
+
+	    private JFreeChart createRewardChart(final IntervalXYDataset dataset) {
+	
+	    rewardChart = ChartFactory.createHistogram(
+	            "Reward",      // chart title
+	            "Time",                      // x axis label
+	            "Reward",                      // y axis label
+	            dataset,                  // data
+	            PlotOrientation.VERTICAL,
+	            true,                     // include legend
+	            true,                     // tooltips
+	            false                     // urls
+	    );
+	
+		// NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
+				 rewardChart.setBackgroundPaint(Color.white);
+				 rewardChart.setBackgroundPaint(new Color(230,230,230));
+	             XYPlot xyplot = (XYPlot)rewardChart.getPlot();
+	             xyplot.setForegroundAlpha(0.7F);
+	             xyplot.setBackgroundPaint(Color.WHITE);
+	             xyplot.setDomainGridlinePaint(new Color(150,150,150));
+	             xyplot.setRangeGridlinePaint(new Color(150,150,150));
+	             XYBarRenderer xybarrenderer = (XYBarRenderer)xyplot.getRenderer();
+	             NumberAxis domain = (NumberAxis) xyplot.getDomainAxis();
+                 domain.setRange(0.00, domainV);
+	             xybarrenderer.setShadowVisible(false);
+	             xybarrenderer.setBarPainter(new StandardXYBarPainter()); 
+		return rewardChart;
+	}
 
 
 

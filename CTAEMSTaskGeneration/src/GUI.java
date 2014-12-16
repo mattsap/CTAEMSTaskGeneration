@@ -22,18 +22,35 @@ import sexpr.Sexpr;
 
 public class GUI extends JApplet {
 	//VisualsGUI visual = new VisualsGUI(this);
-	private static JPanel fxContainer;
+	static JFrame frame;
 	
 	public GUI() {
 		
 	}
 	
+	public static void main(String[] args){
+		
+		SwingUtilities.invokeLater(new Runnable(){
+
+			@Override
+			public void run() {
+				try {
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+                } catch (Exception e) {
+                }
+				startupRelease();
+			}
+			
+		});
+		
+	}
+	
 	@Override
     public void init() {
-        fxContainer = new JPanel();
+        //fxContainer = new JPanel();
         //JPanel ts = new MethodStartEndTime();
-        JPanel ts = new TestPanel();
-        fxContainer.setPreferredSize(new Dimension(ts.getWidth(), ts.getHeight()));
+        JPanel ts = new TestPanel(frame);
+       // fxContainer.setPreferredSize(new Dimension(ts.getWidth(), ts.getHeight()));
 		this.getContentPane().setBackground(Color.gray);
 
         add(ts, BorderLayout.AFTER_LAST_LINE);
@@ -56,7 +73,7 @@ public class GUI extends JApplet {
 	
 	
 	public static void startupRelease() {
-		JFrame frame = new JFrame("JavaFX 2 in Swing");
+		frame = new JFrame("JavaFX 2 in Swing");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         JApplet applet = new GUI();
