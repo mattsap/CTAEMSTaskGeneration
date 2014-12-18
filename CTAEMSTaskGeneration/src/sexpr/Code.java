@@ -5,7 +5,8 @@ public class Code {
 	public int index;
 	public Code(String code, int index) {
 		this.code = code;
-		this.index = index;
+		this.index = index-1;
+		next();
 	}
 	
 	public void skipWhite() {
@@ -14,6 +15,10 @@ public class Code {
 	}
 	public void next() {
 		index++;
+		if (!this.isDone() && code.charAt(index) == ';') {
+			while (!this.isDone() && code.charAt(index) != '\n') index++;
+			this.next();
+		}
 	}
 	public boolean isDone() {
 		return index >= code.length();

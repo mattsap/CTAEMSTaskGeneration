@@ -21,8 +21,10 @@ public class GUI {
 							.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 				} catch (Exception e) {
 				}
-				JFrame frame = new GeneratorFrame();
+				JFrame frame = new JFrame("Method Generator");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				
+				frame.setContentPane(new GeneratorPanel(frame));
 
 				frame.pack();
 				frame.setLocationRelativeTo(null);

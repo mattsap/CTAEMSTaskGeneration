@@ -14,10 +14,10 @@ public class Distribute {
 		
 		//  Setup lookup table
 		for (Sexpr exp : exprs) {
-			if (!exp.id.equals("spec_task"))
-				continue;
-		
-			lookup.put(exp.getArgsOfArgWithName("label").get(0).id, new SexprGraph(exp));
+			if (exp.id.equals("spec_task") || exp.id.equals("spec_task_group")) {
+				lookup.put(exp.getArgsOfArgWithName("label").get(0).id, new SexprGraph(exp));
+				exp.shouldBeEmitted = false;
+			}
 		}
 		
 		//  Build graph
@@ -77,7 +77,7 @@ public class Distribute {
 		assert rootnode != null;
 		
 		rootnode.Distribute(exprs, generatedMethods);
-		
+		rootnode.MarkGraph();
 		return rootnode;
 	}
 }

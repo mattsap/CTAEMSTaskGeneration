@@ -9,6 +9,7 @@ public class Sexpr {
 	public String id;
 	public List<Sexpr> args = new ArrayList<Sexpr>(); 
 	public int cloneCount = 0;
+	public boolean shouldBeEmitted = true;
 
 	public Sexpr clone(List<Sexpr> exprs) {
 		Sexpr ret = new Sexpr();
@@ -40,6 +41,13 @@ public class Sexpr {
 			ret += ")";
 			return ret;
 		}
+	}
+	
+	public String Emit() {
+		if (shouldBeEmitted)
+			return this.toString();
+		else
+			return "";
 	}
 	
 	public boolean NeedsMethods() {

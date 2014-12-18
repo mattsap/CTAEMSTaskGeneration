@@ -9,6 +9,7 @@ import generate.MethodGenerator;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -31,12 +32,11 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartMouseEvent;
-import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -59,7 +59,7 @@ import sexpr.SexprParser;
  */
 
 @SuppressWarnings("serial")
-public class GeneratorFrame extends JFrame {
+public class GeneratorPanel extends javax.swing.JPanel {
 	ChartPanel loadPanel;
 	ChartPanel slackPanel;
 	ChartPanel rewardPanel;
@@ -118,6 +118,8 @@ public class GeneratorFrame extends JFrame {
 	MethodGenerator methodGenerator;
 	boolean generated = false;
 	boolean opened = false;
+	JPanel self = this;
+	Frame frame;
 	JPanel currentPanel;
 	double domainV;
 	double lastDomain;
@@ -136,8 +138,7 @@ public class GeneratorFrame extends JFrame {
 	 * @param frame2
 	 */
 
-	public GeneratorFrame() {
-		super("Method Generator");
+	public GeneratorPanel(JFrame frame2) {
 		initComponents();
 		createLoadGraph();
 		createSlackGraph();
@@ -145,6 +146,7 @@ public class GeneratorFrame extends JFrame {
 		this.add(slackPanel);
 		currentSeries = slackSeries;
 		currentPanel = slackPanel;
+		this.frame = frame2;
 	}
 
 	/**
@@ -296,7 +298,6 @@ public class GeneratorFrame extends JFrame {
 					}
 					if (!found) 
 						slidery.setValue(0);
-					
 				}
 
 			}
@@ -318,7 +319,7 @@ public class GeneratorFrame extends JFrame {
 
 					try {
 						currentSeries.remove(sliderxv);
-						
+						self.updateUI();
 					} catch (Exception ex) {
 						currentSeries.addOrUpdate(sliderxv, slideryv);
 					}
@@ -485,7 +486,7 @@ public class GeneratorFrame extends JFrame {
 			if (value > 0)
 				currentSeries.addOrUpdate(i, value);
 		}
-		
+		self.updateUI();
 	}
 
 	private void setGraphWithNormalDistribution(double mean, double std,
@@ -495,7 +496,7 @@ public class GeneratorFrame extends JFrame {
 			if (value > 0)
 				currentSeries.addOrUpdate(i, value);
 		}
-		
+		self.updateUI();
 	}
 
 	private void setGraphWithUniformDistribution(double value, int rangeStart,
@@ -503,7 +504,7 @@ public class GeneratorFrame extends JFrame {
 		for (int i = rangeStart; i <= rangeEnd; i++) {
 			currentSeries.addOrUpdate(i, value);
 		}
-		
+		self.updateUI();
 	}
 
 	private void setGraphWithUniformRandomDistribution(double min, double max) {
@@ -513,7 +514,7 @@ public class GeneratorFrame extends JFrame {
 			currentSeries.addOrUpdate(i, value);
 
 		}
-		
+		self.updateUI();
 	}
 
 	private void setSeriesWithHistorgram(double[] data, XYSeries series) {
@@ -607,7 +608,7 @@ public class GeneratorFrame extends JFrame {
 		public void actionPerformed(ActionEvent ae) {
 			JFileChooser chooser = new JFileChooser();
 			chooser.setMultiSelectionEnabled(false);
-			int option = chooser.showOpenDialog(GeneratorFrame.this);
+			int option = chooser.showOpenDialog(GeneratorPanel.this);
 			if (option == JFileChooser.APPROVE_OPTION) {
 				File sf = chooser.getSelectedFile();
 
@@ -649,7 +650,7 @@ public class GeneratorFrame extends JFrame {
 
 				// End On Save
 				JFileChooser fileChooser = new JFileChooser();
-				int option = fileChooser.showSaveDialog(GeneratorFrame.this);
+				int option = fileChooser.showSaveDialog(GeneratorPanel.this);
 				if (option == JFileChooser.APPROVE_OPTION) {
 
 					File file = fileChooser.getSelectedFile();
@@ -673,7 +674,7 @@ public class GeneratorFrame extends JFrame {
 
 			int[] items = convertSeries(currentSeries);
 			JFileChooser fileChooser = new JFileChooser();
-			int option = fileChooser.showSaveDialog(GeneratorFrame.this);
+			int option = fileChooser.showSaveDialog(GeneratorPanel.this);
 			if (option == JFileChooser.APPROVE_OPTION) {
 
 				File file = fileChooser.getSelectedFile();
@@ -698,7 +699,7 @@ public class GeneratorFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			GeneratorFrame.this.validate();
+			self.validate();
 			if (currentSeries == null) {
 				currentSeries = LdSeries;
 				currentSeriesName = "Load";
@@ -707,11 +708,11 @@ public class GeneratorFrame extends JFrame {
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				GeneratorFrame.this.add(loadPanel);
+				self.add(loadPanel);
 				Layout.addLayoutComponent(loadPanel, c);
-				
+				self.updateUI();
 			} else {
-				GeneratorFrame.this.remove(currentPanel);
+				self.remove(currentPanel);
 				currentSeries = LdSeries;
 				currentSeriesName = "Load";
 				currentPanel = loadPanel;
@@ -719,9 +720,9 @@ public class GeneratorFrame extends JFrame {
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				GeneratorFrame.this.add(currentPanel);
+				self.add(currentPanel);
 				Layout.addLayoutComponent(loadPanel, c);
-				
+				self.updateUI();
 				;
 			}
 
@@ -732,7 +733,7 @@ public class GeneratorFrame extends JFrame {
 	ActionListener slackButtonActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			GeneratorFrame.this.validate();
+			self.validate();
 			if (currentSeries == null) {
 				currentSeries = slackSeries;
 				currentSeriesName = "Slack";
@@ -740,20 +741,20 @@ public class GeneratorFrame extends JFrame {
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				GeneratorFrame.this.add(currentPanel);
+				self.add(currentPanel);
 				Layout.addLayoutComponent(slackPanel, c);
-				
+				self.updateUI();
 			} else {
-				GeneratorFrame.this.remove(currentPanel);
+				self.remove(currentPanel);
 				currentSeries = slackSeries;
 				currentSeriesName = "Slack";
 				currentPanel = slackPanel;
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				GeneratorFrame.this.add(currentPanel);
+				self.add(currentPanel);
 				Layout.addLayoutComponent(slackPanel, c);
-				
+				self.updateUI();
 			}
 
 		}
@@ -763,7 +764,7 @@ public class GeneratorFrame extends JFrame {
 	ActionListener rewardButtonActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			GeneratorFrame.this.validate();
+			self.validate();
 			if (currentSeries == null) {
 				currentSeries = Reward;
 				currentSeriesName = "Reward";
@@ -771,21 +772,21 @@ public class GeneratorFrame extends JFrame {
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				GeneratorFrame.this.add(rewardPanel);
+				self.add(rewardPanel);
 				Layout.addLayoutComponent(rewardPanel, c);
-				
+				self.updateUI();
 
 			} else {
-				GeneratorFrame.this.remove(currentPanel);
+				self.remove(currentPanel);
 				currentSeries = Reward;
 				currentSeriesName = "Reward";
 				currentPanel = rewardPanel;
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				GeneratorFrame.this.add(rewardPanel);
+				self.add(rewardPanel);
 				Layout.addLayoutComponent(rewardPanel, c);
-				
+				self.updateUI();
 
 			}
 
@@ -800,9 +801,9 @@ public class GeneratorFrame extends JFrame {
 			try {
 				currentSeries.clear();
 			} catch (Exception exp) {
-				
+				self.updateUI();
 			} finally {
-				
+				self.updateUI();
 			}
 
 		}
@@ -819,7 +820,7 @@ public class GeneratorFrame extends JFrame {
 			slackChart.getXYPlot().getDomainAxis().setRange(0, domainV);
 			loadChart.getXYPlot().getDomainAxis().setRange(0, domainV);
 			rewardChart.getXYPlot().getDomainAxis().setRange(0, domainV);
-			
+			self.updateUI();
 
 		}
 
@@ -884,7 +885,7 @@ public class GeneratorFrame extends JFrame {
 				break;
 			}
 
-			
+			self.updateUI();
 		}
 
 	};

@@ -58,12 +58,11 @@ public class Method {
 						"(" + name + "_o0 " + 
 							"(density 1.0) " + 
 							"(duration-distribution " + getDuration() + " 1.0)" + 
+							"(quality-distribution " + getReward() + " 1.0)" + 
 						")" + 
 					") " + 
-					"(reward " + reward + ")" + 
 					"(deadline " + deadline + ")" + 
-					"(arival_time " + arrivalTime + ")" + 
-					"(release_time " + releaseTime + ")" + 
+					"(earliest_start_time " + arrivalTime + ")" + 
 				")";
 	
 		try {

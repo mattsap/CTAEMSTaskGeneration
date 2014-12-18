@@ -13,6 +13,7 @@ public class SexprGraph {
 	public List<Integer> percentMethodsPerDotDotDot = new ArrayList<Integer>();
 	public List<SexprGraph> edges = new ArrayList<SexprGraph>();
 	public List<Integer> percentMethodsPerEdge = new ArrayList<Integer>();
+	
 	public SexprGraph(Sexpr expr) {
 		this.expr = expr;
 	}
@@ -193,5 +194,12 @@ public class SexprGraph {
 		}
 		
 		return ret;
+	}
+	
+	public void MarkGraph() {
+		expr.shouldBeEmitted = true;
+		for (SexprGraph sg : edges) {
+			sg.MarkGraph();
+		}
 	}
 }
