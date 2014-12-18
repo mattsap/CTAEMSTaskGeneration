@@ -30,7 +30,7 @@ public class GenerateLoad {
 		int generatedCount = 0;
 		while (load > aliveMethods.size()) {
 			long duration = random.nextInt(5) + 1;
-			final Method method = new Method(++generatedCount);
+			final Method method = new Method();
 			method.setArrivalTime(this.time);
 			method.setReleaseTime(this.time);
 			method.setDuration(duration);
@@ -237,7 +237,7 @@ public class GenerateLoad {
 				extra -= partExtra;
 			}
 			for (Integer duration : ts.durations) {
-				final Method method = new Method(++generatedCount);
+				final Method method = new Method();
 				method.setArrivalTime(start);
 				method.setReleaseTime(start);
 				method.setDeadline(start + duration);
@@ -351,7 +351,7 @@ public class GenerateLoad {
 				extra -= partExtra;
 			}
 			for (Integer duration : ts.durations) {
-				final Method method = new Method(++generatedCount);
+				final Method method = new Method();
 				method.setArrivalTime(start);
 				method.setReleaseTime(start);
 				method.setDuration((int)Math.ceil(duration * (1.0f-r.nextFloat())));

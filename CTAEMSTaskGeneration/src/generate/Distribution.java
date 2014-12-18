@@ -25,7 +25,7 @@ public class Distribution {
 	    return ((1.0 / (2.0 * b)) * Math.pow(Math.E, - x / b));
 	}
 	
-	public static double Poisson (double lambda, int k) {
+	public static double Poisson (double lambda, double k) {
 		double lk = Math.pow(lambda, k);
 		double enl = Math.pow(Math.E, -lambda);
 		double kf = 1;

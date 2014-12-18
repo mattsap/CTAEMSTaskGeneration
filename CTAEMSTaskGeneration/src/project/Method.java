@@ -9,8 +9,10 @@ public class Method {
 	public int id;
 	private boolean hasBecomeSexpr = false;
 	
-	public Method(int id) {
-		this.id = id;
+	private static int nextid = 1;
+	
+	public Method() {
+		this.id = nextid++;
 	}
 	
 	public long getArrivalTime() {

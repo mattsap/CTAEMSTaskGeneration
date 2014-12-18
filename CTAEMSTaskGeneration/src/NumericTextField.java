@@ -23,7 +23,7 @@ public class NumericTextField extends JTextField
 	
 	private class NumericDocument extends PlainDocument
 	{
-		private final Pattern Digits = Pattern.compile("\\d*");
+		private final Pattern Digits = Pattern.compile("\\d*\\.?\\d*");
 		
 		@Override
 		public void insertString(int offs, String str, AttributeSet a) throws BadLocationException

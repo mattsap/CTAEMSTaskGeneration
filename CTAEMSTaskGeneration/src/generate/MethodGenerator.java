@@ -15,9 +15,9 @@ public abstract class MethodGenerator {
 		ArrayList<Double> stuff = new ArrayList<Double>();
 		
 		for(Method m : generated) {
-			if (!m.hasBecomeSexpr())
-				continue;
-			for (long i = m.getArrivalTime(); i < m.getDeadline(); i++) {
+			//if (!m.hasBecomeSexpr())
+				//continue;
+			for (long i = m.getArrivalTime(); i <= m.getDeadline(); i++) {
 				stuff.add((double) i);
 			}
 		}
@@ -47,8 +47,8 @@ public abstract class MethodGenerator {
 		int[] countOfPressure = new int[1];
 		
 		for(Method m : generated) {
-			if (!m.hasBecomeSexpr())
-				continue;
+			//if (!m.hasBecomeSexpr())
+				//continue;
 			long timePressureAsPercent = (100*(m.getDeadline() - m.getArrivalTime()-m.getDuration())) / (m.getDuration());
 			//assert timePressureAsPercent >= 0 && timePressureAsPercent <= 100 : "Time Pressure not between 0-100: " + timePressureAsPercent;
 			
@@ -90,8 +90,8 @@ public abstract class MethodGenerator {
 		int[] countOfReward = new int[1];
 		
 		for(Method m : generated) {
-			if (!m.hasBecomeSexpr())
-				continue;
+			//if (!m.hasBecomeSexpr())
+				//continue;
 			
 			if (m.getArrivalTime() >= sumOfReward.length) {
 				int[] newSOR = new int[(int)m.getArrivalTime()+1];

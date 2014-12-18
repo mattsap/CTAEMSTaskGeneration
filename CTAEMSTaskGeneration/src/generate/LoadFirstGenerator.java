@@ -121,7 +121,7 @@ public class LoadFirstGenerator extends MethodGenerator {
 				extra -= partExtra;
 			}
 			for (Integer makeSpan : ts.makeSpans) {
-				final Method method = new Method(++generatedCount);
+				final Method method = new Method();
 				method.setArrivalTime(arrivalTime);
 				method.setReleaseTime(arrivalTime);
 				method.setDeadline(arrivalTime + makeSpan);
