@@ -35,6 +35,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -143,7 +145,6 @@ public class GeneratorFrame extends JFrame {
 		this.add(slackPanel);
 		currentSeries = slackSeries;
 		currentPanel = slackPanel;
-		this.setSize(400, 400);
 	}
 
 	/**
@@ -284,12 +285,17 @@ public class GeneratorFrame extends JFrame {
 					sliderxv = ((JSlider) e.getSource()).getValue();
 					labelx.setText("X-VALUE : "
 							+ String.valueOf(sliderx.getValue()));
-					try {
-						slidery.setValue((int) currentSeries
-								.getY((int) sliderxv));
-					} catch (Exception er) {
-
+					
+					double[][] data = currentSeries.toArray();
+					boolean found = false;
+					for (int i = 0; i < data[0].length; i++) {
+						if (data[0][i] == sliderxv) {
+							slidery.setValue((int)data[1][i]);
+							found = true;
+						}
 					}
+					if (!found) 
+						slidery.setValue(0);
 					
 				}
 
