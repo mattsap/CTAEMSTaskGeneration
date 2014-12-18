@@ -62,8 +62,7 @@ public class SexprGraph {
 			thisMethodCounts.add(expr.CountNeeded());
 		}
 		
-		int sum = 0;
-		for (Integer pc : thisMethodPercentages) sum += pc;
+		int sum = expr.PercentNeeded();
 		for (Integer pc : edgeMethodPercentages) sum += pc;
 		assert sum <= 100 && sum >= 0;
 		
@@ -74,16 +73,22 @@ public class SexprGraph {
 		assert count >= 0 : "Negative counts not allowed. " + expr.toString();
 		
 		int generatedMethodsUsed = 0;
-		for (int i = thisNeedingMethods.size() - 1; i >= 0; i--) {
-			int toUse = thisMethodPercentages.get(i) == 0 ? thisMethodCounts.get(i) : (thisMethodPercentages.get(i) * (methods.size() - count)) / 100;
-			if (i == 0 && edgesNeedingMethods.size() == 0 && dotdotdot == null) {
+		
+		//  Add methods to this Sexpr
+		if (this.expr.NeedsMethods()) {
+			int toUse = expr.CountNeeded() + (expr.PercentNeeded() * (methods.size() - count)) / 100;
+			if (edgesNeedingMethods.size() == 0 && dotdotdot == null) {
 				// FIX: need to pull out the multiple of CountNeeded for dotdotdot
 				toUse = methods.size() - generatedMethodsUsed;
 			}
-			thisNeedingMethods.get(i).AddGeneratedMethods(exprs, methods.subList(generatedMethodsUsed, generatedMethodsUsed + toUse));
+			List<Method> methodsToUse = methods.subList(generatedMethodsUsed, generatedMethodsUsed + toUse);
+			List<Sexpr> methodsAdded = expr.AddGeneratedMethods(exprs, methodsToUse);
+			for (Sexpr exp : methodsAdded)
+				this.edges.add(new SexprGraph(exp));
 			generatedMethodsUsed += toUse;
 		}
 		
+		//  Give methods to the sub spec_task
 		if (edgesNeedingMethods.size() > 0) {
 			int methodsRemaining = methods.size() - generatedMethodsUsed;
 			int countWithZeroPercent = 0;

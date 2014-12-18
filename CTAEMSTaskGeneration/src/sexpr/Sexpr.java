@@ -70,7 +70,8 @@ public class Sexpr {
 		return count;
 	}
 	
-	public void AddGeneratedMethods(List<Sexpr> exprs, List<Method> methods) {
+	public List<Sexpr> AddGeneratedMethods(List<Sexpr> exprs, List<Method> methods) {
+		List<Sexpr> ret = new ArrayList<Sexpr>();
 		Sexpr percentTask = null;
 		for (Sexpr sexp : this.args) {
 			if (sexp.id.equals("subtasks")) {
@@ -98,7 +99,9 @@ public class Sexpr {
 			Sexpr mexp = new Sexpr();
 			mexp.id = "Method_GEN_" + m.id;
 			percentTask.args.add(mexp);
-			exprs.add(m.toSexpr(mexp.id));
+			Sexpr sexprMethod = m.toSexpr(mexp.id);
+			exprs.add(sexprMethod);
+			ret.add(sexprMethod);
 			
 			earliest_start_time = Math.min(earliest_start_time, m.getReleaseTime());
 			task_deadline = Math.max(task_deadline, m.getDeadline());
@@ -118,6 +121,7 @@ public class Sexpr {
 
 		SexprUtils.SetField(this, "deadline", "" + task_deadline);
 		SexprUtils.SetField(this, "earliest_start_time", "" + earliest_start_time);
+		return ret;
 	}
 	
 	public List<Sexpr> getArgsOfArgWithName(String name) {

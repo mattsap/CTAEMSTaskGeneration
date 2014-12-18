@@ -146,19 +146,6 @@ public class TestPanel extends javax.swing.JPanel {
 		currentSeries = slackSeries;
 		currentPanel = slackPanel;
 		this.frame = frame2;
-
-		loadButtonActionListener.actionPerformed(null);
-		setGraphWithUniformDistribution(5, 0, 9);
-		setGraphWithUniformDistribution(5, 21, 36);
-
-		slackButtonActionListener.actionPerformed(null);
-		setGraphWithUniformDistribution(50, 21, 30);
-
-		rewardButtonActionListener.actionPerformed(null);
-		setGraphWithUniformRandomDistribution(10, 20);
-
-		generateButtonActionListener.actionPerformed(null);
-		toggleButtonActionListener.actionPerformed(null);
 	}
 
 	/**
@@ -655,9 +642,7 @@ public class TestPanel extends javax.swing.JPanel {
 				}
 				SexprGraph sexprGraph = Distribute.ToSexprs(structure,
 						methodGenerator.getGeneratedMethods());
-				System.out.println(sexprGraph.EmitGraph());
-				if (true)
-					return;
+
 				// End On Save
 				JFileChooser fileChooser = new JFileChooser();
 				int option = fileChooser.showSaveDialog(TestPanel.this);
