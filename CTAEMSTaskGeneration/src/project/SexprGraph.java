@@ -65,13 +65,14 @@ public class SexprGraph {
 		
 		int sum = expr.PercentNeeded();
 		for (Integer pc : edgeMethodPercentages) sum += pc;
-		assert sum <= 100 && sum >= 0;
+		if (sum > 100)
+			throw new RuntimeException("Found task with percentages summing to over 100: " + this.expr.toString());
 		
 
 		int count = 0;
 		for (Integer pc : thisMethodCounts) count += pc;
-		assert count <= methods.size() : "Not enough methods available for this Sexpr: " + expr.toString();
-		assert count >= 0 : "Negative counts not allowed. " + expr.toString();
+		if (count > methods.size())
+			throw new RuntimeException("Not enough methods available for this Sexpr: " + expr.toString());
 		
 		int generatedMethodsUsed = 0;
 		
@@ -131,7 +132,9 @@ public class SexprGraph {
 			sumP += pc;
 			if (pc == 0) countZeros++;
 		}
-		assert sumP <= 100 && sumP >= 0;
+		if (sumP > 100)
+			throw new RuntimeException("Found task with percentages summing to over 100: " + this.expr.toString());
+		
 		
 		List<Integer> realPercentDotDotDot = new ArrayList<Integer>();
 		for (Integer i : percentMethodsPerDotDotDot) {
@@ -146,7 +149,9 @@ public class SexprGraph {
 			SexprGraph graph = dotdotdot.get(i);
 			Integer percent = realPercentDotDotDot.get(i);
 			int countNeeded = graph.CountNeeded();
-			assert countNeeded > 0;
+			if (countNeeded <= 0)
+				throw new RuntimeException("With TASK..., TASK is expected to need generated methods: " + this.expr.toString());
+			
 			for (int j = ((percent*methodsRemaining)/100)/countNeeded; j > 0; j--) {
 				SexprGraph clone = graph.clone(exprs);
 				clone.Distribute(exprs, methods.subList(generatedMethodsUsed, generatedMethodsUsed+countNeeded));

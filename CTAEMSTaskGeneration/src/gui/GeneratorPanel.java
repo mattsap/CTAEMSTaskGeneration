@@ -639,15 +639,20 @@ public class GeneratorPanel extends javax.swing.JPanel {
 				SexprParser p = new SexprParser();
 				List<Sexpr> structure = null;
 				try {
-
 					structure = p.parse(FileText);
+					Distribute.ToSexprs(structure,
+							methodGenerator.getGeneratedMethods());
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null, e1.toString());
+					return;
 				}
-				SexprGraph sexprGraph = Distribute.ToSexprs(structure,
-						methodGenerator.getGeneratedMethods());
+				
+				JOptionPane.showMessageDialog(null, "" + methodGenerator.getMethodsUsed() + " methods used out of " + methodGenerator.getGeneratedMethods().size() + " generated.");
 
+				String finalStructure = "";
+				for (Sexpr exp : structure)
+					finalStructure += exp.Emit();
+				
 				// End On Save
 				JFileChooser fileChooser = new JFileChooser();
 				int option = fileChooser.showSaveDialog(GeneratorPanel.this);
@@ -656,7 +661,7 @@ public class GeneratorPanel extends javax.swing.JPanel {
 					File file = fileChooser.getSelectedFile();
 					// save to file
 					try (FileWriter fw = new FileWriter(file + ".txt")) {
-						fw.write(sexprGraph.EmitGraph());
+						fw.write(finalStructure);
 						fw.close();
 					} catch (Exception ex) {
 

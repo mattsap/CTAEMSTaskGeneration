@@ -12,7 +12,8 @@ public class SexprParser {
 		while (!code.isDone()) {
 			code.skipWhite();
 
-			assert code.isOpenParen() : "Expected '('";
+			if (!code.isOpenParen())
+				throw new RuntimeException("Expected '('");
 			
 			ret.add(parseExpr(code));
 		}
@@ -38,10 +39,11 @@ public class SexprParser {
 			
 			while(!code.isCloseParen()) {
 			
-				assert !code.isDone() : "Expected closing ')'";
+				if (code.isDone()) 
+					new RuntimeException("Expected closing ')' but found the end of file");
 				ret.args.add(parseExpr(code));
-
-				assert !code.isDone() : "Expected closing ')'";
+				if (code.isDone()) 
+					new RuntimeException("Expected closing ')' but found the end of file");
 			}
 			code.next();
 		}

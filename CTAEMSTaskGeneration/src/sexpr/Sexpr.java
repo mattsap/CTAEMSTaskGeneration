@@ -119,11 +119,11 @@ public class Sexpr {
 			Sexpr subtask = SexprUtils.FindTaskWithName(exprs, arg.id);
 			if (subtask.id.equals("spec_task")) {
 				
-				assert subtask.isArgWithName("earliest_start_time") : "All tasks should have an earliest_start_time. Missing in Sexpr: " + subtask.toString();
-				assert subtask.isArgWithName("deadline") : "All tasks should have a deadline. Missing in Sexpr: " + subtask.toString();
+				if (subtask.isArgWithName("earliest_start_time"))
+					earliest_start_time = Math.min(earliest_start_time, Long.parseLong(subtask.getArgsOfArgWithName("earliest_start_time").get(0).id));
 				
-				earliest_start_time = Math.min(earliest_start_time, Long.parseLong(subtask.getArgsOfArgWithName("earliest_start_time").get(0).id));
-				task_deadline = Math.max(task_deadline, Long.parseLong(subtask.getArgsOfArgWithName("deadline").get(0).id));
+				if (subtask.isArgWithName("deadline"))
+					task_deadline = Math.max(task_deadline, Long.parseLong(subtask.getArgsOfArgWithName("deadline").get(0).id));
 			}
 		}
 
@@ -138,8 +138,7 @@ public class Sexpr {
 				return arg.args;
 			}
 		}
-		assert false : "Expected arg with name: " + name + " in Sexpr: " + this.toString();
-		return null;
+		throw new RuntimeException("Expected arg with name: " + name + " in Sexpr: " + this.toString());
 	}
 	public boolean isArgWithName(String name) {
 		for (Sexpr arg : args) {

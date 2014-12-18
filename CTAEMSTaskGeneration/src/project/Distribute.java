@@ -41,7 +41,8 @@ public class Distribute {
 				}
 				else if (lookup.containsKey(taskid)) {
 					SexprGraph lookedup = lookup.get(taskid);
-					assert !lookedup.willNeedACopy : "Referenced the following from multiple places: " + lookedup.expr.toString();
+					if (lookedup.willNeedACopy)
+						throw new RuntimeException("Referenced the following from multiple places: " + lookedup.expr.toString());
 					lookedup.willNeedACopy = true;
 					node.edges.add(lookedup);
 					node.percentMethodsPerEdge.add(percent);
@@ -69,12 +70,14 @@ public class Distribute {
 				}
 			}
 			if (found) {
-				assert rootnode == null;
+				if (rootnode != null) 
+					throw new RuntimeException("Found multiple root tasks");
 				rootnode = node;
 			}
 		}
 		
-		assert rootnode != null;
+		if (rootnode == null)
+			throw new RuntimeException("Could not find a root task");
 		
 		rootnode.Distribute(exprs, generatedMethods);
 		rootnode.MarkGraph();

@@ -14,9 +14,10 @@ public class SexprUtils {
 	public static Sexpr FindTaskWithName(List<Sexpr> exprs, String name) {
 		for (Sexpr exp : exprs) {
 			if (exp.id.equals("spec_task") || exp.id.equals("spec_method")) {
-				List<Sexpr> args = exp.getArgsOfArgWithName("label");
+				List<Sexpr> args = exp.isArgWithName("label") ? exp.getArgsOfArgWithName("label") : null;
 				
-				assert args != null && args.size() == 1 : "Invalid " + exp.id + " in structure with name: must have a label attribute with one argument";
+				if (args == null || args.size() != 1)
+					throw new RuntimeException("Invalid " + exp.id + " in structure with name: must have a label attribute with one argument");
 				
 				if (args.get(0).id.equals(name))
 					return exp;
