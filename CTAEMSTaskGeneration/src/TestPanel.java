@@ -1,4 +1,3 @@
-
 import generate.Distribution;
 import generate.IDurationDistribution;
 import generate.ILoadDistribution;
@@ -28,9 +27,11 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -71,6 +72,8 @@ public class TestPanel extends javax.swing.JPanel {
 	JLabel labely = new JLabel();
 	JLabel setdomain = new JLabel();
 	NumericTextField domaininput = new NumericTextField();
+	JLabel setDuration = new JLabel();
+	NumericTextField durationInput = new NumericTextField();
 	JFreeChart loadChart;
 	JFreeChart slackChart;
 	JFreeChart rewardChart;
@@ -87,8 +90,10 @@ public class TestPanel extends javax.swing.JPanel {
 	JButton reward = new JButton("Reward");
 	JButton load = new JButton("Load");
 	JButton Submit = new JButton("Submit");
+	JButton SubmitDuration = new JButton("Submit");
 	JButton Random = new JButton("Random");
 	JButton Clear = new JButton("Clear");
+	JButton Export = new JButton("Export");
 	FlowLayout Fl2 = new FlowLayout(FlowLayout.CENTER);
 	XYSeries currentSeries;
 	String currentSeriesName;
@@ -96,8 +101,10 @@ public class TestPanel extends javax.swing.JPanel {
 	XYSeries slackSeries = new XYSeries("Slack", false, false);
 	XYSeries Reward = new XYSeries("Reward", false, false);
 	XYSeries generatedLoadSeries = new XYSeries("Generated Load", false, false);
-	XYSeries generatedSlackSeries = new XYSeries("Generated Slack", false, false);
-	XYSeries generatedRewardSeries = new XYSeries("Generated Reward", false, false);
+	XYSeries generatedSlackSeries = new XYSeries("Generated Slack", false,
+			false);
+	XYSeries generatedRewardSeries = new XYSeries("Generated Reward", false,
+			false);
 	XYSeriesCollection loadCollection = new XYSeriesCollection();
 	XYSeriesCollection slackCollection = new XYSeriesCollection();
 	XYSeriesCollection rewardCollection = new XYSeriesCollection();
@@ -115,12 +122,13 @@ public class TestPanel extends javax.swing.JPanel {
 	JPanel currentPanel;
 	double domainV;
 	double lastDomain;
-	
+	int duration = 10;
+	JList<Integer> list;
+
 	private ToggleState toggleState = ToggleState.Input;
+
 	enum ToggleState {
-		Input,
-		GeneratedAndInput,
-		Generated,
+		Input, GeneratedAndInput, Generated,
 	}
 
 	/**
@@ -128,6 +136,7 @@ public class TestPanel extends javax.swing.JPanel {
 	 * 
 	 * @param frame2
 	 */
+
 	public TestPanel(JFrame frame2) {
 		initComponents();
 		createLoadGraph();
@@ -137,17 +146,17 @@ public class TestPanel extends javax.swing.JPanel {
 		currentSeries = slackSeries;
 		currentPanel = slackPanel;
 		this.frame = frame2;
-		
+
 		loadButtonActionListener.actionPerformed(null);
-		setGraphWithUniformDistribution(5, 0, 10);
+		setGraphWithUniformDistribution(5, 0, 9);
 		setGraphWithUniformDistribution(5, 21, 36);
-		
+
 		slackButtonActionListener.actionPerformed(null);
 		setGraphWithUniformDistribution(50, 21, 30);
-		
+
 		rewardButtonActionListener.actionPerformed(null);
 		setGraphWithUniformRandomDistribution(10, 20);
-		
+
 		generateButtonActionListener.actionPerformed(null);
 		toggleButtonActionListener.actionPerformed(null);
 	}
@@ -177,6 +186,7 @@ public class TestPanel extends javax.swing.JPanel {
 		SdContainer.add(slack);
 		SdContainer.add(reward);
 		SdContainer.add(Clear);
+		SdContainer.add(Export);
 		labely.setText("Y-VALUE : ");
 		c.gridx = 1;
 		c.gridy = 3;
@@ -196,14 +206,19 @@ public class TestPanel extends javax.swing.JPanel {
 		c.anchor = GridBagConstraints.LINE_END;
 		slidery.setOrientation(JSlider.VERTICAL);
 		Layout.addLayoutComponent(slidery, c);
-		this.TpContainer.add(Openfile);
-		this.TpContainer.add(SaveFile);
-		this.TpContainer.add(Toggle);
-		this.TpContainer.add(generate);
-		this.TpContainer.add(setdomain);
-		this.TpContainer.add(domaininput);
-		this.TpContainer.add(Submit);
-		setdomain.setText("Enter Max Time for All Graphs");
+		TpContainer.add(Openfile);
+		TpContainer.add(SaveFile);
+		TpContainer.add(Toggle);
+		TpContainer.add(generate);
+		TpContainer.add(setdomain);
+		TpContainer.add(domaininput);
+		TpContainer.add(Submit);
+		TpContainer.add(setDuration);
+		TpContainer.add(durationInput);
+		TpContainer.add(SubmitDuration);
+		setDuration.setText("Duration");
+		durationInput.setColumns(5);
+		setdomain.setText("Time Horizon");
 		domaininput.setColumns(5);
 		c.gridx = 1;
 		c.gridy = 0;
@@ -216,7 +231,8 @@ public class TestPanel extends javax.swing.JPanel {
 		Layout.addLayoutComponent(SdContainer, c);
 		ButtonListeners();
 		domainV = 100;
-
+		durationInput.setText("10");
+		domaininput.setText("100");
 	}
 
 	public int[] convertSeries(XYSeries series) {
@@ -279,6 +295,7 @@ public class TestPanel extends javax.swing.JPanel {
 							.showMessageDialog(null,
 									"Please Select A Type Of Graph Before Trying To Plot A Distribution");
 				} else {
+
 					sliderxv = ((JSlider) e.getSource()).getValue();
 					labelx.setText("X-VALUE : "
 							+ String.valueOf(sliderx.getValue()));
@@ -325,17 +342,19 @@ public class TestPanel extends javax.swing.JPanel {
 		Random.addActionListener(randomButtonActionListener);
 		Poisson.addActionListener(poissonButtonActionListener);
 		Uniform.addActionListener(uniformButtonActionListener);
-		
+
 		load.addActionListener(loadButtonActionListener);
 		slack.addActionListener(slackButtonActionListener);
 		reward.addActionListener(rewardButtonActionListener);
-		
+
 		Clear.addActionListener(clearButtonActionListener);
 		generate.addActionListener(generateButtonActionListener);
 		Openfile.addActionListener(openfileButtonActionListener);
 		SaveFile.addActionListener(savefileButtonActionListener);
 		Toggle.addActionListener(toggleButtonActionListener);
 		Submit.addActionListener(submitButtonActionListener);
+		SubmitDuration.addActionListener(submitDurationButtonActionListener);
+		Export.addActionListener(exportButtonActionListener);
 	}
 
 	public void clearExtra(double lastDomain2) {
@@ -387,7 +406,7 @@ public class TestPanel extends javax.swing.JPanel {
 
 		loadChart = ChartFactory.createHistogram("Load", // chart title
 				"Time", // x axis label
-				"Load", // y axis label
+				"Load (Number of Tasks)", // y axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, true, // include legend
 				true, // tooltips
@@ -415,7 +434,7 @@ public class TestPanel extends javax.swing.JPanel {
 
 		slackChart = ChartFactory.createHistogram("Slack", // chart title
 				"Time", // x axis label
-				"Slack", // y axis label
+				"Slack (Percent Extra of Duration", // y axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, true, // include legend
 				true, // tooltips
@@ -466,58 +485,54 @@ public class TestPanel extends javax.swing.JPanel {
 		xybarrenderer.setBarPainter(new StandardXYBarPainter());
 		return rewardChart;
 	}
-	
-	private void setGraphWithPoissonDistribution(double lambda, double scaleX, double scaleY) {
+
+	private void setGraphWithPoissonDistribution(double lambda, double scaleX,
+			double scaleY) {
 		for (int i = 0; i <= domainV; i++) {
-			int value = (int)(scaleY
-					* Distribution.Poisson(lambda,
-							(i * scaleX)));
+			int value = (int) (scaleY * Distribution.Poisson(lambda,
+					(i * scaleX)));
 			if (value > 0)
 				currentSeries.addOrUpdate(i, value);
 		}
 		self.updateUI();
 	}
-	
-	private void setGraphWithNormalDistribution(double mean, double std, double scalar) {
+
+	private void setGraphWithNormalDistribution(double mean, double std,
+			double scalar) {
 		for (int i = 0; i <= domainV; i++) {
-			int value = (int)(scalar
-					* Distribution.Normal(
-							mean,
-							std,
-							i));
+			int value = (int) (scalar * Distribution.Normal(mean, std, i));
 			if (value > 0)
 				currentSeries.addOrUpdate(i, value);
 		}
 		self.updateUI();
 	}
-	
-	private void setGraphWithUniformDistribution(double value, int rangeStart, int rangeEnd) {
+
+	private void setGraphWithUniformDistribution(double value, int rangeStart,
+			int rangeEnd) {
 		for (int i = rangeStart; i <= rangeEnd; i++) {
-			currentSeries.addOrUpdate(i,value);
+			currentSeries.addOrUpdate(i, value);
 		}
 		self.updateUI();
 	}
-	
+
 	private void setGraphWithUniformRandomDistribution(double min, double max) {
 		for (int i = 0; i <= domainV; i++) {
-			double value = Distribution.UniformRandom(
-					min,
-					max);
+			double value = Distribution.UniformRandom(min, max);
 
 			currentSeries.addOrUpdate(i, value);
 
 		}
 		self.updateUI();
 	}
-	
+
 	private void setSeriesWithHistorgram(double[] data, XYSeries series) {
-		//double[] tpgen = methodGenerator.histStructureTimePressure();
-		//XYSeries TPGenSeries = new XYSeries("Time Pressure Generated");
+		// double[] tpgen = methodGenerator.histStructureTimePressure();
+		// XYSeries TPGenSeries = new XYSeries("Time Pressure Generated");
 		List<Integer> graph = new ArrayList<Integer>();
 		for (int i = 0; i < data.length; i++) {
 			while (data[i] >= graph.size())
 				graph.add(0);
-			graph.set((int) data[i],graph.get((int) data[i]) + 1);
+			graph.set((int) data[i], graph.get((int) data[i]) + 1);
 		}
 		series.clear();
 		for (int i = 0; i < graph.size(); i++) {
@@ -553,7 +568,7 @@ public class TestPanel extends javax.swing.JPanel {
 				@Override
 				public int getDurationAtArrivalTime(int arrivalTime) {
 					// TODO Auto-generated method stub
-					return 10;
+					return duration;
 				}
 			});
 
@@ -575,11 +590,15 @@ public class TestPanel extends javax.swing.JPanel {
 			try {
 				methodGenerator = lfg;
 				methodGenerator.generate();
-				
-				setSeriesWithHistorgram(methodGenerator.histStructureLoad(), generatedLoadSeries);
-				setSeriesWithHistorgram(methodGenerator.histStructureTimePressure(), generatedSlackSeries);
-				setSeriesWithHistorgram(methodGenerator.histStructureReward(), generatedRewardSeries);
-				
+
+				setSeriesWithHistorgram(methodGenerator.histStructureLoad(),
+						generatedLoadSeries);
+				setSeriesWithHistorgram(
+						methodGenerator.histStructureTimePressure(),
+						generatedSlackSeries);
+				setSeriesWithHistorgram(methodGenerator.histStructureReward(),
+						generatedRewardSeries);
+
 				generated = true;
 				JOptionPane.showMessageDialog(null, "Generated "
 						+ methodGenerator.getGeneratedMethods().size()
@@ -591,7 +610,6 @@ public class TestPanel extends javax.swing.JPanel {
 				generated = false;
 			}
 		}
-
 	};
 
 	ActionListener openfileButtonActionListener = new ActionListener() {
@@ -603,8 +621,7 @@ public class TestPanel extends javax.swing.JPanel {
 				File sf = chooser.getSelectedFile();
 
 				try {
-					FileText = readFile(sf.getPath(),
-							Charset.defaultCharset());
+					FileText = readFile(sf.getPath(), Charset.defaultCharset());
 					JOptionPane.showMessageDialog(null, sf.getName()
 							+ " Has been Opened");
 					opened = true;
@@ -617,13 +634,14 @@ public class TestPanel extends javax.swing.JPanel {
 
 		}
 	};
-	
+
 	ActionListener savefileButtonActionListener = new ActionListener() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (opened == false || generated == false) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane
+						.showMessageDialog(null,
 								"Please Make Sure you have Opened A file and Generated Distributions First");
 			} else {
 				SexprParser p = new SexprParser();
@@ -635,9 +653,11 @@ public class TestPanel extends javax.swing.JPanel {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				SexprGraph sexprGraph = Distribute.ToSexprs(structure, methodGenerator.getGeneratedMethods());
+				SexprGraph sexprGraph = Distribute.ToSexprs(structure,
+						methodGenerator.getGeneratedMethods());
 				System.out.println(sexprGraph.EmitGraph());
-				if (true) return;
+				if (true)
+					return;
 				// End On Save
 				JFileChooser fileChooser = new JFileChooser();
 				int option = fileChooser.showSaveDialog(TestPanel.this);
@@ -656,7 +676,35 @@ public class TestPanel extends javax.swing.JPanel {
 			}
 		}
 	};
-	
+
+	ActionListener exportButtonActionListener = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			int[] items = convertSeries(currentSeries);
+			JFileChooser fileChooser = new JFileChooser();
+			int option = fileChooser.showSaveDialog(TestPanel.this);
+			if (option == JFileChooser.APPROVE_OPTION) {
+
+				File file = fileChooser.getSelectedFile();
+				// save to file
+				try (FileWriter fw = new FileWriter(file + ".txt")) {
+					int total = 0;
+					for (int i = 0; i <= items.length - 1; i++) {
+						fw.write(i + " : " + String.valueOf(items[i] + "\n"));
+						total += i;
+					}
+					fw.close();
+				}
+
+				catch (Exception ex) {
+
+				}
+			}
+		}
+	};
+
 	ActionListener loadButtonActionListener = new ActionListener() {
 
 		@Override
@@ -722,7 +770,7 @@ public class TestPanel extends javax.swing.JPanel {
 		}
 
 	};
-	
+
 	ActionListener rewardButtonActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -755,7 +803,7 @@ public class TestPanel extends javax.swing.JPanel {
 		}
 
 	};
-	
+
 	ActionListener clearButtonActionListener = new ActionListener() {
 
 		@Override
@@ -771,7 +819,7 @@ public class TestPanel extends javax.swing.JPanel {
 		}
 
 	};
-	
+
 	ActionListener submitButtonActionListener = new ActionListener() {
 
 		@Override
@@ -787,14 +835,26 @@ public class TestPanel extends javax.swing.JPanel {
 		}
 
 	};
-	
-	
+
+	ActionListener submitDurationButtonActionListener = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				duration = Integer.parseInt(durationInput.getText());
+			} catch (Exception exp) {
+
+			}
+		}
+
+	};
+
 	ActionListener toggleButtonActionListener = new ActionListener() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
-			switch(toggleState) {
+			switch (toggleState) {
 			case Input:
 				toggleState = ToggleState.GeneratedAndInput;
 				break;
@@ -804,8 +864,8 @@ public class TestPanel extends javax.swing.JPanel {
 			case Generated:
 				toggleState = ToggleState.Input;
 			}
-				
-			switch(toggleState) {
+
+			switch (toggleState) {
 			case Input:
 				slackCollection.removeAllSeries();
 				slackCollection.addSeries(slackSeries);
@@ -839,7 +899,7 @@ public class TestPanel extends javax.swing.JPanel {
 		}
 
 	};
-	
+
 	ActionListener normalButtonActionListener = new ActionListener() {
 
 		@Override
@@ -881,7 +941,7 @@ public class TestPanel extends javax.swing.JPanel {
 			}
 		}
 	};
-	
+
 	ActionListener poissonButtonActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -910,20 +970,18 @@ public class TestPanel extends javax.swing.JPanel {
 				myPanel.add(scalary);
 				myPanel.add(Box.createHorizontalStrut(4)); // a spacer
 
-				int result = JOptionPane
-						.showConfirmDialog(null, myPanel,
-								"Please Enter Lambda",
-								JOptionPane.OK_CANCEL_OPTION);
+				int result = JOptionPane.showConfirmDialog(null, myPanel,
+						"Please Enter Lambda", JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.OK_OPTION) {
 					setGraphWithPoissonDistribution(
-							Double.parseDouble(Lambda.getText()), 
-							Double.parseDouble(scalarx.getText()), 
+							Double.parseDouble(Lambda.getText()),
+							Double.parseDouble(scalarx.getText()),
 							Double.parseDouble(scalary.getText()));
 				}
 			}
 		}
 	};
-	
+
 	ActionListener uniformButtonActionListener = new ActionListener() {
 
 		@Override
@@ -959,15 +1017,14 @@ public class TestPanel extends javax.swing.JPanel {
 					} else {
 
 						setGraphWithUniformDistribution(
-								Double.parseDouble(Value.getText()), 
-								xStart,
+								Double.parseDouble(Value.getText()), xStart,
 								xEnd);
 					}
 				}
 			}
 		}
 	};
-	
+
 	ActionListener randomButtonActionListener = new ActionListener() {
 
 		@Override

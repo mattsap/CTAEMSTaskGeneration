@@ -17,7 +17,7 @@ public abstract class MethodGenerator {
 		for(Method m : generated) {
 			//if (!m.hasBecomeSexpr())
 				//continue;
-			for (long i = m.getArrivalTime(); i <= m.getDeadline(); i++) {
+			for (long i = m.getArrivalTime(); i < m.getDeadline(); i++) {
 				stuff.add((double) i);
 			}
 		}

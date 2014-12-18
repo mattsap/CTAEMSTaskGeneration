@@ -77,7 +77,7 @@ public class LoadFirstDurationGenerator extends MethodGenerator {
 			double timePressure = timePressureDist.getTimePressureFor(s);
 			int makeSpan = Math.max(1, duration + (int)(duration * timePressure));
 			
-			if (s + makeSpan >= end)
+			if (s + makeSpan > end)
 				continue;
 			
 			List<Method> best = getBestMatchOfTimeSlot(s+makeSpan, end);
