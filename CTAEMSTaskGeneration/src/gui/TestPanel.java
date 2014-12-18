@@ -1,3 +1,4 @@
+package gui;
 import generate.Distribution;
 import generate.IDurationDistribution;
 import generate.ILoadDistribution;
