@@ -9,7 +9,6 @@ import generate.MethodGenerator;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -32,7 +31,6 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -59,7 +57,7 @@ import sexpr.SexprParser;
  */
 
 @SuppressWarnings("serial")
-public class TestPanel extends javax.swing.JPanel {
+public class GeneratorFrame extends JFrame {
 	ChartPanel loadPanel;
 	ChartPanel slackPanel;
 	ChartPanel rewardPanel;
@@ -118,8 +116,6 @@ public class TestPanel extends javax.swing.JPanel {
 	MethodGenerator methodGenerator;
 	boolean generated = false;
 	boolean opened = false;
-	JPanel self = this;
-	Frame frame;
 	JPanel currentPanel;
 	double domainV;
 	double lastDomain;
@@ -138,7 +134,8 @@ public class TestPanel extends javax.swing.JPanel {
 	 * @param frame2
 	 */
 
-	public TestPanel(JFrame frame2) {
+	public GeneratorFrame() {
+		super("Method Generator");
 		initComponents();
 		createLoadGraph();
 		createSlackGraph();
@@ -146,7 +143,7 @@ public class TestPanel extends javax.swing.JPanel {
 		this.add(slackPanel);
 		currentSeries = slackSeries;
 		currentPanel = slackPanel;
-		this.frame = frame2;
+		this.setSize(400, 400);
 	}
 
 	/**
@@ -293,7 +290,7 @@ public class TestPanel extends javax.swing.JPanel {
 					} catch (Exception er) {
 
 					}
-					self.updateUI();
+					
 				}
 
 			}
@@ -315,7 +312,7 @@ public class TestPanel extends javax.swing.JPanel {
 
 					try {
 						currentSeries.remove(sliderxv);
-						self.updateUI();
+						
 					} catch (Exception ex) {
 						currentSeries.addOrUpdate(sliderxv, slideryv);
 					}
@@ -482,7 +479,7 @@ public class TestPanel extends javax.swing.JPanel {
 			if (value > 0)
 				currentSeries.addOrUpdate(i, value);
 		}
-		self.updateUI();
+		
 	}
 
 	private void setGraphWithNormalDistribution(double mean, double std,
@@ -492,7 +489,7 @@ public class TestPanel extends javax.swing.JPanel {
 			if (value > 0)
 				currentSeries.addOrUpdate(i, value);
 		}
-		self.updateUI();
+		
 	}
 
 	private void setGraphWithUniformDistribution(double value, int rangeStart,
@@ -500,7 +497,7 @@ public class TestPanel extends javax.swing.JPanel {
 		for (int i = rangeStart; i <= rangeEnd; i++) {
 			currentSeries.addOrUpdate(i, value);
 		}
-		self.updateUI();
+		
 	}
 
 	private void setGraphWithUniformRandomDistribution(double min, double max) {
@@ -510,7 +507,7 @@ public class TestPanel extends javax.swing.JPanel {
 			currentSeries.addOrUpdate(i, value);
 
 		}
-		self.updateUI();
+		
 	}
 
 	private void setSeriesWithHistorgram(double[] data, XYSeries series) {
@@ -604,7 +601,7 @@ public class TestPanel extends javax.swing.JPanel {
 		public void actionPerformed(ActionEvent ae) {
 			JFileChooser chooser = new JFileChooser();
 			chooser.setMultiSelectionEnabled(false);
-			int option = chooser.showOpenDialog(TestPanel.this);
+			int option = chooser.showOpenDialog(GeneratorFrame.this);
 			if (option == JFileChooser.APPROVE_OPTION) {
 				File sf = chooser.getSelectedFile();
 
@@ -646,7 +643,7 @@ public class TestPanel extends javax.swing.JPanel {
 
 				// End On Save
 				JFileChooser fileChooser = new JFileChooser();
-				int option = fileChooser.showSaveDialog(TestPanel.this);
+				int option = fileChooser.showSaveDialog(GeneratorFrame.this);
 				if (option == JFileChooser.APPROVE_OPTION) {
 
 					File file = fileChooser.getSelectedFile();
@@ -670,7 +667,7 @@ public class TestPanel extends javax.swing.JPanel {
 
 			int[] items = convertSeries(currentSeries);
 			JFileChooser fileChooser = new JFileChooser();
-			int option = fileChooser.showSaveDialog(TestPanel.this);
+			int option = fileChooser.showSaveDialog(GeneratorFrame.this);
 			if (option == JFileChooser.APPROVE_OPTION) {
 
 				File file = fileChooser.getSelectedFile();
@@ -695,7 +692,7 @@ public class TestPanel extends javax.swing.JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			self.validate();
+			GeneratorFrame.this.validate();
 			if (currentSeries == null) {
 				currentSeries = LdSeries;
 				currentSeriesName = "Load";
@@ -704,11 +701,11 @@ public class TestPanel extends javax.swing.JPanel {
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				self.add(loadPanel);
+				GeneratorFrame.this.add(loadPanel);
 				Layout.addLayoutComponent(loadPanel, c);
-				self.updateUI();
+				
 			} else {
-				self.remove(currentPanel);
+				GeneratorFrame.this.remove(currentPanel);
 				currentSeries = LdSeries;
 				currentSeriesName = "Load";
 				currentPanel = loadPanel;
@@ -716,9 +713,9 @@ public class TestPanel extends javax.swing.JPanel {
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				self.add(currentPanel);
+				GeneratorFrame.this.add(currentPanel);
 				Layout.addLayoutComponent(loadPanel, c);
-				self.updateUI();
+				
 				;
 			}
 
@@ -729,7 +726,7 @@ public class TestPanel extends javax.swing.JPanel {
 	ActionListener slackButtonActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			self.validate();
+			GeneratorFrame.this.validate();
 			if (currentSeries == null) {
 				currentSeries = slackSeries;
 				currentSeriesName = "Slack";
@@ -737,20 +734,20 @@ public class TestPanel extends javax.swing.JPanel {
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				self.add(currentPanel);
+				GeneratorFrame.this.add(currentPanel);
 				Layout.addLayoutComponent(slackPanel, c);
-				self.updateUI();
+				
 			} else {
-				self.remove(currentPanel);
+				GeneratorFrame.this.remove(currentPanel);
 				currentSeries = slackSeries;
 				currentSeriesName = "Slack";
 				currentPanel = slackPanel;
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				self.add(currentPanel);
+				GeneratorFrame.this.add(currentPanel);
 				Layout.addLayoutComponent(slackPanel, c);
-				self.updateUI();
+				
 			}
 
 		}
@@ -760,7 +757,7 @@ public class TestPanel extends javax.swing.JPanel {
 	ActionListener rewardButtonActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			self.validate();
+			GeneratorFrame.this.validate();
 			if (currentSeries == null) {
 				currentSeries = Reward;
 				currentSeriesName = "Reward";
@@ -768,21 +765,21 @@ public class TestPanel extends javax.swing.JPanel {
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				self.add(rewardPanel);
+				GeneratorFrame.this.add(rewardPanel);
 				Layout.addLayoutComponent(rewardPanel, c);
-				self.updateUI();
+				
 
 			} else {
-				self.remove(currentPanel);
+				GeneratorFrame.this.remove(currentPanel);
 				currentSeries = Reward;
 				currentSeriesName = "Reward";
 				currentPanel = rewardPanel;
 				c.gridx = 1;
 				c.gridy = 1;
 				c.anchor = GridBagConstraints.CENTER;
-				self.add(rewardPanel);
+				GeneratorFrame.this.add(rewardPanel);
 				Layout.addLayoutComponent(rewardPanel, c);
-				self.updateUI();
+				
 
 			}
 
@@ -797,9 +794,9 @@ public class TestPanel extends javax.swing.JPanel {
 			try {
 				currentSeries.clear();
 			} catch (Exception exp) {
-				self.updateUI();
+				
 			} finally {
-				self.updateUI();
+				
 			}
 
 		}
@@ -816,7 +813,7 @@ public class TestPanel extends javax.swing.JPanel {
 			slackChart.getXYPlot().getDomainAxis().setRange(0, domainV);
 			loadChart.getXYPlot().getDomainAxis().setRange(0, domainV);
 			rewardChart.getXYPlot().getDomainAxis().setRange(0, domainV);
-			self.updateUI();
+			
 
 		}
 
@@ -881,7 +878,7 @@ public class TestPanel extends javax.swing.JPanel {
 				break;
 			}
 
-			self.updateUI();
+			
 		}
 
 	};
